@@ -231,16 +231,16 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
     // Full version for main content
     return (
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl px-6 py-4 border border-green-200 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center space-x-4 flex-1 min-w-0">
             {/* Active Status Indicator */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-shrink-0">
               <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse shadow-lg"></div>
               <span className="text-green-700 text-sm font-semibold">ACTIVE</span>
             </div>
             
             {/* Timer Display */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 flex-shrink-0">
               <div className="bg-white rounded-lg px-3 py-2 border border-green-200 shadow-sm">
                 <ClockIcon className="h-5 w-5 text-green-600 inline mr-2" />
                 <span className="font-mono text-xl font-bold text-green-800">
@@ -250,9 +250,9 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
             </div>
             
             {/* Task Title */}
-            <div className="flex items-center space-x-2">
-              <div className="h-5 border-l-2 border-green-300"></div>
-              <span className="text-green-800 font-semibold truncate max-w-48">
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <div className="h-5 border-l-2 border-green-300 flex-shrink-0"></div>
+              <span className="text-green-800 font-semibold truncate">
                 {activeEntry.task.title}
               </span>
             </div>
@@ -262,7 +262,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
           <button
             onClick={stopCurrentTimer}
             disabled={startingTimer}
-            className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm rounded-lg font-semibold transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm rounded-lg font-semibold transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 flex-shrink-0"
           >
             {startingTimer ? (
               <>

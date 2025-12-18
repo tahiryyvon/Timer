@@ -84,7 +84,7 @@ export default function DashboardClient({
               </p>
               
               {/* Enhanced Timer Start Control */}
-              <div className="max-w-md mx-auto">
+              <div className="w-full max-w-2xl mx-auto">
                 <TimerStartControl />
               </div>
 
