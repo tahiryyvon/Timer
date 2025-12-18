@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYEE
+  HR
+}
+
+model User {
+  id            String      @id @default(cuid())
+  name          String?
+  email         String      @unique
+  password      String?
+  role          Role        @default(EMPLOYEE)
+  tasks         Task[]
+  timeEntries   TimeEntry[]
+}
+
+model Task {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  status      String      @default("OPEN") // OPEN, COMPLETED
+  createdAt   DateTime    @default(now())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  timeEntries TimeEntry[]
+}
+
+model TimeEntry {
+  id          String      @id @default(cuid())
+  startTime   DateTime    @default(now())
+  endTime     DateTime?
+  totalSeconds Int        @default(0)
+  isActive    Boolean     @default(true)
+  
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  taskId      String
+  task        Task        @relation(fields: [taskId], references: [id])
+  
+  // To handle pauses, we store intervals
+  intervals   TimeInterval[]
+}
+
+model TimeInterval {
+  id          String    @id @default(cuid())
+  startTime   DateTime  @default(now())
+  endTime     DateTime?
+  timeEntryId String
+  timeEntry   TimeEntry @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+}
