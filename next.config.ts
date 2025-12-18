@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// Timer App - Production Configuration
 const nextConfig: NextConfig = {
   serverExternalPackages: ['@prisma/client', 'prisma'],
   typescript: {
