@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { startTimer, pauseTimer, resumeTimer, stopTimer } from '@/app/actions/time';
+import { startTimer, pauseTimer, resumeTimer, stopTimer, getActiveTimeEntry } from '@/app/actions/time';
 
 interface TimeEntry {
     id: string;
@@ -11,6 +11,10 @@ interface TimeEntry {
     isActive: boolean;
     userId: string;
     taskId: string;
+    task?: {
+      title: string;
+      description: string | null;
+    };
 }
 
 interface TimerButtonProps {
@@ -18,21 +22,48 @@ interface TimerButtonProps {
   userId: string;
 }
 
-export function TimerButton({ activeTimeEntry, userId }: TimerButtonProps) {
+export function TimerButton({ activeTimeEntry: initialActiveEntry, userId }: TimerButtonProps) {
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [localTimer, setLocalTimer] = useState(0);
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
+  const [activeTimeEntry, setActiveTimeEntry] = useState(initialActiveEntry);
   
   const isRunning = !!activeTimeEntry;
   const [isPaused, setIsPaused] = useState(false);
   
+  // Update current time every second for real-time display
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Periodically fetch the latest active time entry from server
+  useEffect(() => {
+    const fetchActiveEntry = async () => {
+      try {
+        const latestActiveEntry = await getActiveTimeEntry(userId);
+        setActiveTimeEntry(latestActiveEntry);
+      } catch (error) {
+        console.error('Failed to fetch active time entry:', error);
+      }
+    };
+
+    // Fetch immediately, then every 10 seconds
+    fetchActiveEntry();
+    const interval = setInterval(fetchActiveEntry, 10000);
+    return () => clearInterval(interval);
+  }, [userId]);
+  
   // Calculate timer value based on active entry or local timer
   const timer = useMemo(() => {
     if (activeTimeEntry) {
-      return Math.floor((new Date().getTime() - new Date(activeTimeEntry.startTime).getTime()) / 1000);
+      return Math.floor((currentTime.getTime() - new Date(activeTimeEntry.startTime).getTime()) / 1000);
     }
     return localTimer;
-  }, [activeTimeEntry, localTimer]);
+  }, [activeTimeEntry, localTimer, currentTime]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -80,6 +111,10 @@ export function TimerButton({ activeTimeEntry, userId }: TimerButtonProps) {
     // Clear the form after starting
     setTaskTitle('');
     setTaskDescription('');
+    
+    // Refresh active entry immediately
+    const latestActiveEntry = await getActiveTimeEntry(userId);
+    setActiveTimeEntry(latestActiveEntry);
   };
 
   const handlePause = async () => {
@@ -101,6 +136,10 @@ export function TimerButton({ activeTimeEntry, userId }: TimerButtonProps) {
       await stopTimer(userId, activeTimeEntry.id);
       setIsPaused(false);
       setLocalTimer(0);
+      
+      // Refresh active entry immediately
+      const latestActiveEntry = await getActiveTimeEntry(userId);
+      setActiveTimeEntry(latestActiveEntry);
     }
   };
 

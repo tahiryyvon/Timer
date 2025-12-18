@@ -152,3 +152,21 @@ export async function stopTimer(userId: string, timeEntryId: string) {
 
   revalidatePath('/dashboard');
 }
+
+export async function getActiveTimeEntry(userId: string) {
+  const activeTimeEntry = await prisma.timeEntry.findFirst({
+    where: {
+      userId,
+      isActive: true,
+      endTime: null,
+    },
+    include: {
+      task: true,
+    },
+    orderBy: {
+      startTime: 'desc',
+    },
+  });
+
+  return activeTimeEntry;
+}

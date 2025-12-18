@@ -11,6 +11,8 @@ import {
   ClockIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
+import { PersistentTimer } from '@/components/timer/PersistentTimer';
+import { ProfileDropdown } from '@/components/profile/ProfileDropdown';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -80,10 +82,16 @@ export default function AppLayout({ children }: LayoutProps) {
           </button>
           <div className="flex-1 px-4 flex justify-between items-center">
             <div className="flex-1">
-              <h1 className="text-2xl font-semibold text-gray-900">
+              <h1 className="text-lg font-semibold text-gray-900 md:hidden">
                 Time Tracker
               </h1>
             </div>
+            
+            {/* Persistent Timer - Center */}
+            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
+              <PersistentTimer />
+            </div>
+            
             <div className="ml-4 flex items-center md:ml-6">
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-500">
@@ -99,6 +107,11 @@ export default function AppLayout({ children }: LayoutProps) {
 
         {/* Page content */}
         <main className="flex-1 relative overflow-y-auto focus:outline-none bg-gray-50">
+          {/* Mobile Persistent Timer */}
+          <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+            <PersistentTimer />
+          </div>
+          
           <div className="py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
               {children}
@@ -149,19 +162,9 @@ function SidebarContent({ navigation, pathname }: { navigation: NavigationItem[]
         </nav>
       </div>
 
-      {/* Footer */}
-      <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <div className="h-10 w-10 bg-gray-300 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-600">TY</span>
-            </div>
-          </div>
-          <div className="ml-3">
-            <p className="text-sm font-medium text-gray-700">Tahiry Yvon</p>
-            <p className="text-xs text-gray-500">Employee</p>
-          </div>
-        </div>
+      {/* Footer with Profile Dropdown */}
+      <div className="flex-shrink-0 border-t border-gray-200 p-4">
+        <ProfileDropdown userName="Tahiry Yvon" userRole="Employee" />
       </div>
     </div>
   );
