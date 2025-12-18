@@ -25,7 +25,7 @@ interface Task {
 interface DashboardClientProps {
   user: {
     id: string;
-    name: string;
+    name: string | null;
     timeEntries: TimeEntry[];
   };
   activeTimeEntry: TimeEntry | undefined;
@@ -55,7 +55,7 @@ export default function DashboardClient({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, {user.name}! 👋
+              Welcome back, {user.name || 'User'}! 👋
             </h1>
             <p className="text-gray-600 mt-2">
               Track your time efficiently and stay productive.
