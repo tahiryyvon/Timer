@@ -1,4 +1,0 @@
-# Ignore problematic config files
-prisma.config.ts
-prisma.config.js
-*.config.ts.backup

@@ -73,7 +73,6 @@ logs
 pids
 *.pid
 *.seed
-!prisma/seed.ts
 *.pid.lock
 
 # Coverage directory used by tools like istanbul
