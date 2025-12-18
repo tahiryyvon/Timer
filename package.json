@@ -6,9 +6,16 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc --noEmit",
     "postinstall": "prisma generate",
-    "db:deploy": "prisma db push"
+    "db:deploy": "prisma db push",
+    "db:migrate": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "vercel:env": "vercel env pull .env.production",
+    "deploy:check": "npm run type-check && npm run lint && npm run build",
+    "deploy:prod": "vercel --prod"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
