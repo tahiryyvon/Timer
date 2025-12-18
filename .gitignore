@@ -31,12 +31,13 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Note: .env.production is intentionally not ignored (template for Vercel import)
 
 # vercel
 .vercel
@@ -72,6 +73,7 @@ logs
 pids
 *.pid
 *.seed
+!prisma/seed.ts
 *.pid.lock
 
 # Coverage directory used by tools like istanbul
