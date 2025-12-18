@@ -13,9 +13,13 @@
     "db:deploy": "prisma db push",
     "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
     "vercel:env": "vercel env pull .env.production",
     "deploy:check": "npm run type-check && npm run lint && npm run build",
     "deploy:prod": "vercel --prod"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -40,7 +44,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
+    "prisma": "^4.16.2",
     "tailwindcss": "^4",
+    "tsx": "^4.7.0",
     "typescript": "^5"
   }
 }
