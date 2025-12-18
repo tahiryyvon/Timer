@@ -11,7 +11,7 @@ import {
   ClockIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
-import { PersistentTimer } from '@/components/timer/PersistentTimer';
+import { TimerStartControl } from '@/components/timer/TimerStartControl';
 import { ProfileDropdown } from '@/components/profile/ProfileDropdown';
 
 interface LayoutProps {
@@ -87,9 +87,11 @@ export default function AppLayout({ children }: LayoutProps) {
               </h1>
             </div>
             
-            {/* Persistent Timer - Center */}
-            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
-              <PersistentTimer />
+            {/* Timer Start Control - Center, Compact for Header */}
+            <div className="hidden md:flex">
+              <div className="max-w-md">
+                <TimerStartControl compact={true} />
+              </div>
             </div>
             
             <div className="ml-4 flex items-center md:ml-6">
@@ -107,9 +109,9 @@ export default function AppLayout({ children }: LayoutProps) {
 
         {/* Page content */}
         <main className="flex-1 relative overflow-y-auto focus:outline-none bg-gray-50">
-          {/* Mobile Persistent Timer */}
+          {/* Mobile Timer Start Control */}
           <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
-            <PersistentTimer />
+            <TimerStartControl />
           </div>
           
           <div className="py-6">
