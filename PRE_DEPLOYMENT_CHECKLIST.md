@@ -25,10 +25,11 @@
 - [ ] All commits pushed
 
 ## ✅ Vercel Configuration
-- [ ] `vercel.json` configured with build commands
+- [ ] Using Vercel UI configuration (no vercel.json needed)
 - [ ] `next.config.ts` optimized for production
 - [ ] `package.json` has correct build scripts
 - [ ] No sensitive data in code (only in env vars)
+- [ ] Vercel auto-detects Next.js framework
 
 ## ✅ Post-Deployment Tasks
 - [ ] Environment variables set in Vercel
