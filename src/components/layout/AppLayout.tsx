@@ -16,6 +16,11 @@ import { ProfileDropdown } from '@/components/profile/ProfileDropdown';
 
 interface LayoutProps {
   children: React.ReactNode;
+  user?: {
+    name?: string;
+    email?: string;
+    role?: string;
+  };
 }
 
 interface NavigationItem {
@@ -30,7 +35,7 @@ const navigation: NavigationItem[] = [
   { name: 'Time List', href: '/time-entries', icon: ClockIcon },
 ];
 
-export default function AppLayout({ children }: LayoutProps) {
+export default function AppLayout({ children, user }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
@@ -59,14 +64,14 @@ export default function AppLayout({ children }: LayoutProps) {
               <XMarkIcon className="h-6 w-6 text-white" />
             </button>
           </div>
-          <SidebarContent navigation={navigation} pathname={pathname} />
+          <SidebarContent navigation={navigation} pathname={pathname} user={user} />
         </div>
       </div>
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64">
-          <SidebarContent navigation={navigation} pathname={pathname} />
+          <SidebarContent navigation={navigation} pathname={pathname} user={user} />
         </div>
       </div>
 
@@ -125,7 +130,15 @@ export default function AppLayout({ children }: LayoutProps) {
   );
 }
 
-function SidebarContent({ navigation, pathname }: { navigation: NavigationItem[], pathname: string }) {
+function SidebarContent({ navigation, pathname, user }: { 
+  navigation: NavigationItem[], 
+  pathname: string,
+  user?: {
+    name?: string;
+    email?: string;
+    role?: string;
+  };
+}) {
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
       {/* Logo */}
@@ -166,7 +179,10 @@ function SidebarContent({ navigation, pathname }: { navigation: NavigationItem[]
 
       {/* Footer with Profile Dropdown */}
       <div className="flex-shrink-0 border-t border-gray-200 p-4">
-        <ProfileDropdown userName="Tahiry Yvon" userRole="Employee" />
+        <ProfileDropdown 
+          userName={user?.name || user?.email || "User"} 
+          userRole={user?.role || "Employee"} 
+        />
       </div>
     </div>
   );

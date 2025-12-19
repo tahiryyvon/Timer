@@ -70,7 +70,7 @@ export default async function DashboardPage() {
     .reduce((acc: number, entry: TimeEntry) => acc + entry.totalSeconds, 0);
 
   return (
-    <AppLayout>
+    <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
       <DashboardClient
         user={user}
         activeTimeEntry={activeTimeEntry}

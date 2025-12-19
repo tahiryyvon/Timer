@@ -3,9 +3,9 @@ import { redirect } from 'next/navigation';
 import { authOptions } from '../api/auth/[...nextauth]/options';
 import prisma from '@/lib/prisma';
 import AppLayout from '@/components/layout/AppLayout';
-import TimeEntriesClient from '@/components/time-entries/TimeEntriesClient';
+import ProfileClient from '@/components/profile/ProfileClient';
 
-export default async function TimeEntriesPage() {
+export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user || !session.user.email) {
@@ -14,21 +14,11 @@ export default async function TimeEntriesPage() {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    include: {
-      timeEntries: {
-        include: {
-          task: {
-            select: {
-              id: true,
-              title: true,
-              description: true,
-            },
-          },
-        },
-        orderBy: {
-          startTime: 'desc',
-        },
-      },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
     },
   });
 
@@ -38,7 +28,7 @@ export default async function TimeEntriesPage() {
 
   return (
     <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
-      <TimeEntriesClient user={user} />
+      <ProfileClient user={user} />
     </AppLayout>
   );
 }

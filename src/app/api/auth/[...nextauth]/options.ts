@@ -23,12 +23,33 @@ export const authOptions: NextAuthOptions = {
           }
         });
 
-        if (!user) {
+        if (!user || !user.password) {
           return null;
         }
 
-        // Check if password matches (in production, use proper password hashing)
-        const isPasswordValid = user.password === credentials.password;
+        // Helper function to verify password (handles both plain text and hashed)
+        async function verifyPassword(inputPassword: string, storedPassword: string): Promise<boolean> {
+          // First try plain text comparison (for existing passwords)
+          if (inputPassword === storedPassword) {
+            return true;
+          }
+          
+          // If bcrypt is available and password looks hashed, try bcrypt
+          try {
+            const bcrypt = await import('bcryptjs');
+            // Check if password looks like a bcrypt hash (starts with $2a$, $2b$, or $2y$)
+            if (storedPassword.match(/^\$2[ayb]\$.{56}$/)) {
+              return await bcrypt.compare(inputPassword, storedPassword);
+            }
+          } catch {
+            // bcrypt not available or comparison failed
+          }
+          
+          return false;
+        }
+
+        // Check if password matches (handles both plain text and hashed passwords)
+        const isPasswordValid = await verifyPassword(credentials.password, user.password);
 
         if (!isPasswordValid) {
           return null;

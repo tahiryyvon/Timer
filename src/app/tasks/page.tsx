@@ -36,7 +36,7 @@ export default async function TasksPage() {
   }
 
   return (
-    <AppLayout>
+    <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
       <TasksClient user={user} />
     </AppLayout>
   );

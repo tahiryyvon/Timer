@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { 
   ChevronDownIcon,
   UserIcon,
@@ -16,6 +17,7 @@ interface ProfileDropdownProps {
 export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: ProfileDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -28,6 +30,11 @@ export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: Pr
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleProfileClick = () => {
+    setIsOpen(false);
+    router.push('/profile');
+  };
 
   const handleLogout = async () => {
     setIsOpen(false);
@@ -81,7 +88,7 @@ export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: Pr
           </div>
           
           <button
-            onClick={() => setIsOpen(false)}
+            onClick={handleProfileClick}
             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <UserIcon className="h-4 w-4 mr-3 text-gray-400" />
