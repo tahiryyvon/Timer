@@ -169,7 +169,7 @@ export function TimerButton({ activeTimeEntry: initialActiveEntry, userId }: Tim
                 value={taskTitle}
                 onChange={(e) => setTaskTitle(e.target.value)}
                 placeholder="Enter task title (optional - defaults to 'General Work')"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
               />
             </div>
             
@@ -183,7 +183,7 @@ export function TimerButton({ activeTimeEntry: initialActiveEntry, userId }: Tim
                 onChange={(e) => setTaskDescription(e.target.value)}
                 placeholder="Enter task description (optional)"
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical transition-colors"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical transition-colors text-gray-900 placeholder-gray-500"
               />
             </div>
           </div>

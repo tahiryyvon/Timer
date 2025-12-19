@@ -24,6 +24,7 @@ interface TasksClientProps {
 
 export default function TasksClient({ user }: TasksClientProps) {
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formatTime = (timeInSeconds: number) => {
     const hours = Math.floor(timeInSeconds / 3600);
@@ -47,7 +48,12 @@ export default function TasksClient({ user }: TasksClientProps) {
   };
 
   const handleSaveTask = async (taskData: TaskData) => {
+    // Prevent double submissions
+    if (isSubmitting) return;
+    
     try {
+      setIsSubmitting(true);
+      
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
@@ -65,11 +71,18 @@ export default function TasksClient({ user }: TasksClientProps) {
     } catch (error) {
       console.error('Error saving task:', error);
       throw error;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleSaveAndStartTask = async (taskData: TaskData) => {
+    // Prevent double submissions
+    if (isSubmitting) return;
+    
     try {
+      setIsSubmitting(true);
+      
       // First, create the task
       const response = await fetch('/api/tasks', {
         method: 'POST',
@@ -103,6 +116,8 @@ export default function TasksClient({ user }: TasksClientProps) {
     } catch (error) {
       console.error('Error saving and starting task:', error);
       throw error;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { TimerStartControl } from '@/components/timer/TimerStartControl';
+import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 
 interface TimeEntry {
     id: string;
@@ -41,11 +43,33 @@ export default function DashboardClient({
   weeklyTotal, 
   monthlyTotal 
 }: DashboardClientProps) {
+  const [isExporting, setIsExporting] = useState(false);
+
   const formatTime = (timeInSeconds: number) => {
     const hours = Math.floor(timeInSeconds / 3600);
     const minutes = Math.floor((timeInSeconds % 3600) / 60);
     const seconds = timeInSeconds % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleExportToExcel = async () => {
+    if (isExporting) return;
+    
+    setIsExporting(true);
+    try {
+      // Create a temporary link to download the file
+      const link = document.createElement('a');
+      link.href = '/api/export/excel';
+      link.download = ''; // Filename will be set by the server
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export data. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -61,13 +85,34 @@ export default function DashboardClient({
               Track your time efficiently and stay productive.
             </p>
           </div>
-          <div className="hidden sm:block">
-            <div className="flex items-center space-x-2 px-4 py-2 bg-blue-50 rounded-lg">
-              <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-blue-700">
-                {activeTimeEntry ? 'Timer Running' : 'Ready to Start'}
-              </span>
+          <div className="flex items-center space-x-4">
+            <div className="hidden sm:block">
+              <div className="flex items-center space-x-2 px-4 py-2 bg-blue-50 rounded-lg">
+                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-blue-700">
+                  {activeTimeEntry ? 'Timer Running' : 'Ready to Start'}
+                </span>
+              </div>
             </div>
+            
+            {/* Export Button */}
+            <button
+              onClick={handleExportToExcel}
+              disabled={isExporting}
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:transform-none"
+            >
+              {isExporting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  <span>Exporting...</span>
+                </>
+              ) : (
+                <>
+                  <DocumentArrowDownIcon className="h-4 w-4" />
+                  <span>Export Data</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

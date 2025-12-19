@@ -75,7 +75,7 @@ export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTas
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter task title..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
             disabled={isLoading}
           />
         </div>
@@ -91,7 +91,7 @@ export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTas
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter task description (optional)..."
             rows={4}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical transition-colors text-gray-900 placeholder-gray-500"
             disabled={isLoading}
           />
         </div>

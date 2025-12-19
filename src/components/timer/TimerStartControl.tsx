@@ -92,19 +92,32 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
   };
 
   const startTimerForTask = async (taskId: string) => {
+    // Prevent double-clicks and rapid successive calls
+    if (startingTimer) {
+      console.log('Timer start already in progress, ignoring duplicate request');
+      return;
+    }
+    
+    console.log('Starting timer for task:', taskId);
     setStartingTimer(true);
     try {
       const response = await fetch('/api/timer/start', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Request-ID': `timer-start-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        },
         body: JSON.stringify({ taskId }),
       });
 
       if (response.ok) {
+        console.log('Timer started successfully for task:', taskId);
         // Refresh data to show new active timer
         window.location.reload();
       } else {
-        throw new Error('Failed to start timer');
+        const errorData = await response.json();
+        console.error('Timer start failed:', errorData);
+        throw new Error(`Failed to start timer: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error starting timer:', error);
@@ -134,7 +147,12 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
   };
 
   const handleCreateAndStartTask = async (taskData: TaskData) => {
+    // Prevent double submissions
+    if (startingTimer) return;
+    
     try {
+      setStartingTimer(true);
+      
       // Create task
       const response = await fetch('/api/tasks', {
         method: 'POST',
@@ -150,6 +168,8 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
     } catch (error) {
       console.error('Error creating and starting task:', error);
       throw error;
+    } finally {
+      setStartingTimer(false);
     }
   };
 
@@ -332,7 +352,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
                           disabled={startingTimer}
                           className="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 disabled:opacity-50"
                         >
-                          <div className="font-medium">{task.title}</div>
+                          <div className="font-medium text-gray-900">{task.title}</div>
                         </button>
                       ))
                     )}

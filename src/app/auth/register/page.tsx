@@ -47,7 +47,7 @@ export default function RegisterPage() {
         const data = await response.json();
         setError(data.error || 'Registration failed');
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred during registration');
     } finally {
       setIsLoading(false);
@@ -83,7 +83,7 @@ export default function RegisterPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-gray-500"
             />
           </div>
 
@@ -98,7 +98,7 @@ export default function RegisterPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-gray-500"
             />
           </div>
 
@@ -113,7 +113,7 @@ export default function RegisterPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-gray-500"
             />
           </div>
 
