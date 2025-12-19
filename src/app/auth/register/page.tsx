@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useLoading } from '@/components/providers/LoadingProvider';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -15,6 +15,12 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
+  const { setIsLoading: setGlobalLoading } = useLoading();
+
+  const handleSignInClick = () => {
+    setGlobalLoading(true);
+    router.push('/auth/signin');
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -141,12 +147,13 @@ export default function RegisterPage() {
             >
               {isLoading ? 'Creating Account...' : 'Register'}
             </button>
-            <Link
-              href="/auth/signin"
+            <button
+              type="button"
+              onClick={handleSignInClick}
               className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
             >
               Already have an account? Sign In
-            </Link>
+            </button>
           </div>
         </form>
       </div>

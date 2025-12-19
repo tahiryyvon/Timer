@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserIcon, KeyIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 interface User {
@@ -18,6 +18,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [lastPasswordUpdate, setLastPasswordUpdate] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: user.name || '',
     email: user.email,
@@ -28,6 +29,28 @@ export default function ProfileClient({ user }: ProfileClientProps) {
     confirmPassword: '',
   });
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Load last password update from localStorage
+  useEffect(() => {
+    const lastUpdate = localStorage.getItem(`passwordUpdate_${user.id}`);
+    setLastPasswordUpdate(lastUpdate);
+  }, [user.id]);
+
+  const formatDate = (date: Date | null | undefined) => {
+    if (!date) return 'Not available';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const getPasswordUpdateText = () => {
+    if (!lastPasswordUpdate) return 'Not available';
+    return formatDate(new Date(lastPasswordUpdate));
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -98,6 +121,11 @@ export default function ProfileClient({ user }: ProfileClientProps) {
         setMessage({ type: 'success', text: 'Password updated successfully!' });
         setShowPasswordForm(false);
         setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        
+        // Save timestamp to localStorage
+        const updateTime = new Date().toISOString();
+        localStorage.setItem(`passwordUpdate_${user.id}`, updateTime);
+        setLastPasswordUpdate(updateTime);
       } else {
         const data = await response.json();
         setMessage({ type: 'error', text: data.error || 'Failed to update password' });
@@ -319,7 +347,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-900 font-medium">Password</p>
-                <p className="text-sm text-gray-600">Last updated: Not available</p>
+                <p className="text-sm text-gray-600">Last updated: {getPasswordUpdateText()}</p>
               </div>
               <div className="text-gray-400">
                 ••••••••

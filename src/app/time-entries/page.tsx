@@ -4,6 +4,7 @@ import { authOptions } from '../api/auth/[...nextauth]/options';
 import prisma from '@/lib/prisma';
 import AppLayout from '@/components/layout/AppLayout';
 import TimeEntriesClient from '@/components/time-entries/TimeEntriesClient';
+import { ClientProviders } from '@/components/providers/ClientProviders';
 
 export default async function TimeEntriesPage() {
   const session = await getServerSession(authOptions);
@@ -37,8 +38,10 @@ export default async function TimeEntriesPage() {
   }
 
   return (
-    <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
-      <TimeEntriesClient user={user} />
-    </AppLayout>
+    <ClientProviders>
+      <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
+        <TimeEntriesClient user={user} />
+      </AppLayout>
+    </ClientProviders>
   );
 }

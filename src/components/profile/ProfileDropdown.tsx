@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useLoading } from '@/components/providers/LoadingProvider';
 import { 
   ChevronDownIcon,
   UserIcon,
@@ -18,6 +19,7 @@ export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: Pr
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { setIsLoading } = useLoading();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -33,6 +35,7 @@ export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: Pr
 
   const handleProfileClick = () => {
     setIsOpen(false);
+    setIsLoading(true);
     router.push('/profile');
   };
 

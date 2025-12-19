@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   Bars3Icon, 
   XMarkIcon,
@@ -13,6 +12,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { TimerStartControl } from '@/components/timer/TimerStartControl';
 import { ProfileDropdown } from '@/components/profile/ProfileDropdown';
+import { useLoading } from '@/components/providers/LoadingProvider';
+import { NavigationLoading, PageLoading } from '@/components/ui/LoadingSpinner';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -38,9 +39,21 @@ const navigation: NavigationItem[] = [
 export default function AppLayout({ children, user }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { isLoading, setIsLoading } = useLoading();
+
+  const handleNavigation = (href: string, itemName: string) => {
+    if (pathname === href) return; // Don't navigate to current page
+    
+    setIsLoading(true, itemName);
+    router.push(href);
+  };
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
+      {/* Global Page Loading Overlay */}
+      {isLoading && <PageLoading />}
+      
       {/* Mobile sidebar */}
       <div 
         className={`fixed inset-0 flex z-40 md:hidden transition-opacity duration-300 ease-linear ${
@@ -64,14 +77,14 @@ export default function AppLayout({ children, user }: LayoutProps) {
               <XMarkIcon className="h-6 w-6 text-white" />
             </button>
           </div>
-          <SidebarContent navigation={navigation} pathname={pathname} user={user} />
+          <SidebarContent navigation={navigation} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} />
         </div>
       </div>
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64">
-          <SidebarContent navigation={navigation} pathname={pathname} user={user} />
+          <SidebarContent navigation={navigation} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} />
         </div>
       </div>
 
@@ -130,7 +143,7 @@ export default function AppLayout({ children, user }: LayoutProps) {
   );
 }
 
-function SidebarContent({ navigation, pathname, user }: { 
+function SidebarContent({ navigation, pathname, user, onNavigate, isLoading }: { 
   navigation: NavigationItem[], 
   pathname: string,
   user?: {
@@ -138,6 +151,8 @@ function SidebarContent({ navigation, pathname, user }: {
     email?: string;
     role?: string;
   };
+  onNavigate: (href: string, name: string) => void;
+  isLoading: boolean;
 }) {
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
@@ -153,25 +168,27 @@ function SidebarContent({ navigation, pathname, user }: {
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`group flex items-center px-2 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
-                  isActive
-                    ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <item.icon
-                  className={`mr-3 flex-shrink-0 h-5 w-5 transition-colors duration-200 ${
-                    isActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
+              <div key={item.name} className="relative">
+                <button
+                  onClick={() => onNavigate(item.href, item.name)}
+                  className={`group flex items-center px-2 py-3 text-sm font-medium rounded-lg transition-colors duration-200 w-full text-left ${
+                    isActive
+                      ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-600'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
-                />
-                {item.name}
-                {isActive && (
-                  <ChevronRightIcon className="ml-auto h-4 w-4 text-blue-500" />
-                )}
-              </Link>
+                >
+                  <item.icon
+                    className={`mr-3 flex-shrink-0 h-5 w-5 transition-colors duration-200 ${
+                      isActive ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
+                    }`}
+                  />
+                  {item.name}
+                  {isActive && (
+                    <ChevronRightIcon className="ml-auto h-4 w-4 text-blue-500" />
+                  )}
+                </button>
+                <NavigationLoading isActive={isActive && isLoading} />
+              </div>
             );
           })}
         </nav>

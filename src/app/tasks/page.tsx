@@ -4,6 +4,7 @@ import { authOptions } from '../api/auth/[...nextauth]/options';
 import prisma from '@/lib/prisma';
 import AppLayout from '@/components/layout/AppLayout';
 import TasksClient from '@/components/tasks/TasksClient';
+import { ClientProviders } from '@/components/providers/ClientProviders';
 
 export default async function TasksPage() {
   const session = await getServerSession(authOptions);
@@ -36,8 +37,10 @@ export default async function TasksPage() {
   }
 
   return (
-    <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
-      <TasksClient user={user} />
-    </AppLayout>
+    <ClientProviders>
+      <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
+        <TasksClient user={user} />
+      </AppLayout>
+    </ClientProviders>
   );
 }

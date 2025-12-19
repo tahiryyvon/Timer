@@ -2,10 +2,19 @@
 
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLoading } from '@/components/providers/LoadingProvider';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
+  const { setIsLoading } = useLoading();
+
+  const handleCreateAccountClick = () => {
+    setIsLoading(true);
+    router.push('/auth/register');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,12 +60,13 @@ export default function SignInPage() {
           >
             Sign In
           </button>
-          <a
-            href="/auth/register"
+          <button
+            type="button"
+            onClick={handleCreateAccountClick}
             className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
           >
             Create Account
-          </a>
+          </button>
         </div>
       </form>
     </div>

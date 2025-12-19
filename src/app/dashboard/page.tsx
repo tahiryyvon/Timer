@@ -4,6 +4,7 @@ import { authOptions } from '../api/auth/[...nextauth]/options';
 import prisma from '@/lib/prisma';
 import AppLayout from '@/components/layout/AppLayout';
 import DashboardClient from '@/components/dashboard/DashboardClient';
+import { ClientProviders } from '@/components/providers/ClientProviders';
 
 interface TimeEntry {
   id: string;
@@ -70,14 +71,16 @@ export default async function DashboardPage() {
     .reduce((acc: number, entry: TimeEntry) => acc + entry.totalSeconds, 0);
 
   return (
-    <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
-      <DashboardClient
-        user={user}
-        activeTimeEntry={activeTimeEntry}
-        dailyTotal={dailyTotal}
-        weeklyTotal={weeklyTotal}
-        monthlyTotal={monthlyTotal}
-      />
-    </AppLayout>
+    <ClientProviders>
+      <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
+        <DashboardClient
+          user={user}
+          activeTimeEntry={activeTimeEntry}
+          dailyTotal={dailyTotal}
+          weeklyTotal={weeklyTotal}
+          monthlyTotal={monthlyTotal}
+        />
+      </AppLayout>
+    </ClientProviders>
   );
 }
