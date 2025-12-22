@@ -13,7 +13,7 @@ export default getRequestConfig(async ({locale}) => {
 
   return {
     locale,
-    messages: (await import(`../messages/${locale}.json`)).default,
+    messages: (await import(`../../messages/${locale}.json`)).default,
     timeZone: 'Europe/London'
   };
 });
