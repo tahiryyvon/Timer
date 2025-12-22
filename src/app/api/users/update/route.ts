@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 export async function PUT(request: NextRequest) {
   try {
     // Check if user has permission to manage users (HR or MANAGER only)
-    const { user, response } = await requireDeletePermission();
+    const { response } = await requireDeletePermission();
     
     if (response) {
       return response;

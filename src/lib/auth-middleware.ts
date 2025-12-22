@@ -36,7 +36,7 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
  * Check if user has permission to delete resources
  */
 export function canDeleteResources(role: Role): boolean {
-  return role === 'HR' || role === 'MANAGER';
+  return role === Role.HR || role === Role.MANAGER;
 }
 
 /**
@@ -88,7 +88,7 @@ export async function canAccessTask(userId: string, taskId: string, requireOwner
   if (!user) return false;
 
   // HR and MANAGER can access any task
-  if (user.role === 'HR' || user.role === 'MANAGER') {
+  if (user.role === Role.HR || user.role === Role.MANAGER) {
     return true;
   }
 
@@ -115,7 +115,7 @@ export async function canAccessTimeEntry(userId: string, timeEntryId: string, re
   if (!user) return false;
 
   // HR and MANAGER can access any time entry
-  if (user.role === 'HR' || user.role === 'MANAGER') {
+  if (user.role === Role.HR || user.role === Role.MANAGER) {
     return true;
   }
 
