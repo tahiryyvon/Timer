@@ -15,7 +15,8 @@
     "db:studio": "prisma studio",
     "vercel:env": "vercel env pull .env.production",
     "deploy:check": "npm run type-check && npm run lint && npm run build",
-    "deploy:prod": "vercel --prod"
+    "deploy:prod": "vercel --prod",
+    "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -40,10 +41,12 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/xlsx": "^0.0.35",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "prisma": "^4.16.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

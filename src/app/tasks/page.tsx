@@ -22,6 +22,7 @@ export default async function TasksPage() {
             select: {
               id: true,
               totalSeconds: true,
+              endTime: true,
             },
           },
         },

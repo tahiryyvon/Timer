@@ -8,7 +8,8 @@ import {
   HomeIcon,
   ClipboardDocumentListIcon,
   ClockIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline';
 import { TimerStartControl } from '@/components/timer/TimerStartControl';
 import { ProfileDropdown } from '@/components/profile/ProfileDropdown';
@@ -41,6 +42,12 @@ export default function AppLayout({ children, user }: LayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { isLoading, setIsLoading } = useLoading();
+
+  // Add Users management for HR and Manager roles
+  const navigationWithUsers = [...navigation];
+  if (user?.role === 'HR' || user?.role === 'MANAGER') {
+    navigationWithUsers.push({ name: 'Users', href: '/users', icon: UsersIcon });
+  }
 
   const handleNavigation = (href: string, itemName: string) => {
     if (pathname === href) return; // Don't navigate to current page
@@ -77,14 +84,14 @@ export default function AppLayout({ children, user }: LayoutProps) {
               <XMarkIcon className="h-6 w-6 text-white" />
             </button>
           </div>
-          <SidebarContent navigation={navigation} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} />
+          <SidebarContent navigation={navigationWithUsers} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} />
         </div>
       </div>
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64">
-          <SidebarContent navigation={navigation} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} />
+          <SidebarContent navigation={navigationWithUsers} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} />
         </div>
       </div>
 

@@ -18,6 +18,8 @@ interface TimeEntry {
 
 interface TimeEntriesClientProps {
   user: {
+    id: string;
+    role: string;
     timeEntries: TimeEntry[];
   };
 }
@@ -27,6 +29,11 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [isDeletingEntry, setIsDeletingEntry] = useState<string | null>(null);
+
+  const canDeleteResources = () => {
+    return user.role === 'HR' || user.role === 'MANAGER';
+  };
 
   const formatTime = (timeInSeconds: number) => {
     const hours = Math.floor(timeInSeconds / 3600);
@@ -113,6 +120,45 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
       alert('Failed to export data. Please try again.');
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleDeleteTimeEntry = async (entryId: string, taskTitle: string, startTime: Date) => {
+    if (!canDeleteResources()) {
+      alert('You do not have permission to delete time entries. Only HR and Managers can delete time entries.');
+      return;
+    }
+
+    const formattedStartTime = new Date(startTime).toLocaleString();
+    const confirmed = confirm(
+      `Are you sure you want to delete this time entry?\n\nTask: ${taskTitle}\nStart Time: ${formattedStartTime}\n\nThis action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setIsDeletingEntry(entryId);
+
+    try {
+      const response = await fetch(`/api/time-entries/${entryId}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete time entry');
+      }
+
+      alert(`Time entry for "${taskTitle}" has been deleted successfully.`);
+      
+      // Refresh the page to show updated time entries list
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Error deleting time entry:', error);
+      alert('Failed to delete time entry. Please try again.');
+    } finally {
+      setIsDeletingEntry(null);
     }
   };
 
@@ -321,6 +367,19 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 Active
                               </span>
+                            )}
+                            {canDeleteResources() && (
+                              <button 
+                                onClick={() => handleDeleteTimeEntry(entry.id, entry.task.title, entry.startTime)}
+                                disabled={isDeletingEntry === entry.id}
+                                className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded hover:bg-red-100 hover:border-red-300 transition-all duration-200 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Delete time entry (HR/Manager only)"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                {isDeletingEntry === entry.id ? '...' : ''}
+                              </button>
                             )}
                           </div>
                         </div>
