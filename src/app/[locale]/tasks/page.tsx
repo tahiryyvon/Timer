@@ -1,12 +1,12 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { authOptions } from '../api/auth/[...nextauth]/options';
 import prisma from '@/lib/prisma';
 import AppLayout from '@/components/layout/AppLayout';
-import TimeEntriesClient from '@/components/time-entries/TimeEntriesClient';
+import TasksClient from '@/components/tasks/TasksClient';
 import { ClientProviders } from '@/components/providers/ClientProviders';
 
-export default async function TimeEntriesPage() {
+export default async function TasksPage() {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user || !session.user.email) {
@@ -16,18 +16,18 @@ export default async function TimeEntriesPage() {
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: {
-      timeEntries: {
+      tasks: {
         include: {
-          task: {
+          timeEntries: {
             select: {
               id: true,
-              title: true,
-              description: true,
+              totalSeconds: true,
+              endTime: true,
             },
           },
         },
         orderBy: {
-          startTime: 'desc',
+          createdAt: 'desc',
         },
       },
     },
@@ -40,7 +40,7 @@ export default async function TimeEntriesPage() {
   return (
     <ClientProviders>
       <AppLayout user={{ name: user.name || undefined, email: user.email, role: user.role || undefined }}>
-        <TimeEntriesClient user={user} />
+        <TasksClient user={user} />
       </AppLayout>
     </ClientProviders>
   );
