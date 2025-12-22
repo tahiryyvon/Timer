@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { TimerStartControl } from '@/components/timer/TimerStartControl';
 import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 
 interface TimeEntry {
     id: string;
@@ -44,6 +45,7 @@ export default function DashboardClient({
   monthlyTotal 
 }: DashboardClientProps) {
   const [isExporting, setIsExporting] = useState(false);
+  const t = useTranslations('dashboard');
 
   const formatTime = (timeInSeconds: number) => {
     const hours = Math.floor(timeInSeconds / 3600);
@@ -79,10 +81,10 @@ export default function DashboardClient({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, {user.name || 'User'}! 👋
+              {t('welcomeMessage').replace('{name}', user.name || 'User')}
             </h1>
             <p className="text-gray-600 mt-2">
-              Track your time efficiently and stay productive.
+              {t('trackTimeMessage')}
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -90,7 +92,7 @@ export default function DashboardClient({
               <div className="flex items-center space-x-2 px-4 py-2 bg-blue-50 rounded-lg">
                 <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium text-blue-700">
-                  {activeTimeEntry ? 'Timer Running' : 'Ready to Start'}
+                  {activeTimeEntry ? t('currentTimer') : t('readyToStart')}
                 </span>
               </div>
             </div>
@@ -104,12 +106,12 @@ export default function DashboardClient({
               {isExporting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                  <span>Exporting...</span>
+                  <span>{t('exporting')}</span>
                 </>
               ) : (
                 <>
                   <DocumentArrowDownIcon className="h-4 w-4" />
-                  <span>Export Data</span>
+                  <span>{t('exportData')}</span>
                 </>
               )}
             </button>
@@ -123,9 +125,9 @@ export default function DashboardClient({
         <div className="lg:col-span-2">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
             <div className="text-center space-y-6">
-              <h2 className="text-2xl font-semibold text-gray-800">Time Tracker</h2>
+              <h2 className="text-2xl font-semibold text-gray-800">{t('timeTracker')}</h2>
               <p className="text-gray-600">
-                Start tracking time on existing tasks or create new ones
+                {t('startTrackingMessage')}
               </p>
               
               {/* Enhanced Timer Start Control */}
@@ -138,13 +140,13 @@ export default function DashboardClient({
                 <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">{user.timeEntries.length}</div>
-                    <div className="text-sm text-blue-700 font-medium">Total Sessions</div>
+                    <div className="text-sm text-blue-700 font-medium">{t('totalSessions')}</div>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">
-                      {Math.floor(user.timeEntries.reduce((acc, entry) => acc + entry.totalSeconds, 0) / 3600)}h
+                      {Math.floor(user.timeEntries.reduce((acc, entry) => acc + entry.totalSeconds, 0) / 3600)}{t('hours')}
                     </div>
-                    <div className="text-sm text-green-700 font-medium">Total Hours</div>
+                    <div className="text-sm text-green-700 font-medium">{t('totalHours')}</div>
                   </div>
                 </div>
               </div>
@@ -158,7 +160,7 @@ export default function DashboardClient({
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Today&apos;s Hours</p>
+                <p className="text-blue-100 text-sm font-medium">{t('todaysHours')}</p>
                 <p className="text-2xl font-bold mt-1">{formatTime(dailyTotal)}</p>
               </div>
               <div className="bg-blue-400 bg-opacity-30 rounded-lg p-3">
@@ -173,7 +175,7 @@ export default function DashboardClient({
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-sm p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">This Week</p>
+                <p className="text-green-100 text-sm font-medium">{t('thisWeek')}</p>
                 <p className="text-2xl font-bold mt-1">{formatTime(weeklyTotal)}</p>
               </div>
               <div className="bg-green-400 bg-opacity-30 rounded-lg p-3">
@@ -188,7 +190,7 @@ export default function DashboardClient({
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">This Month</p>
+                <p className="text-purple-100 text-sm font-medium">{t('thisMonth')}</p>
                 <p className="text-2xl font-bold mt-1">{formatTime(monthlyTotal)}</p>
               </div>
               <div className="bg-purple-400 bg-opacity-30 rounded-lg p-3">
@@ -203,7 +205,7 @@ export default function DashboardClient({
 
       {/* Recent Activity */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">{t('recentActivity')}</h3>
         {user.timeEntries && user.timeEntries.length > 0 ? (
           <div className="space-y-3">
             {user.timeEntries.slice(0, 5).map((entry: TimeEntry) => (
@@ -228,7 +230,7 @@ export default function DashboardClient({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-gray-500 mb-4">No time entries yet. Start your first timer!</p>
+            <p className="text-gray-500 mb-4">{t('noTimeEntries')}</p>
             <div className="max-w-xs mx-auto">
               <TimerStartControl />
             </div>

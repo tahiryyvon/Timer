@@ -5,16 +5,16 @@ import { usePathname, useRouter } from 'next/navigation';
 import { 
   Bars3Icon, 
   XMarkIcon,
-  HomeIcon,
-  ClipboardDocumentListIcon,
-  ClockIcon,
   ChevronRightIcon,
-  UsersIcon
+  ClockIcon
 } from '@heroicons/react/24/outline';
 import { TimerStartControl } from '@/components/timer/TimerStartControl';
 import { ProfileDropdown } from '@/components/profile/ProfileDropdown';
 import { useLoading } from '@/components/providers/LoadingProvider';
 import { NavigationLoading, PageLoading } from '@/components/ui/LoadingSpinner';
+import LanguageSwitcher from '@/components/language/LanguageSwitcherHeader';
+import { useNavigationItems } from '@/components/navigation/NavigationItems';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -31,23 +31,15 @@ interface NavigationItem {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
-const navigation: NavigationItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Task List', href: '/tasks', icon: ClipboardDocumentListIcon },
-  { name: 'Time List', href: '/time-entries', icon: ClockIcon },
-];
-
 export default function AppLayout({ children, user }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { isLoading, setIsLoading } = useLoading();
-
-  // Add Users management for HR and Manager roles
-  const navigationWithUsers = [...navigation];
-  if (user?.role === 'HR' || user?.role === 'MANAGER') {
-    navigationWithUsers.push({ name: 'Users', href: '/users', icon: UsersIcon });
-  }
+  const t = useTranslations('common');
+  
+  // Use the navigation items hook
+  const navigationWithUsers = useNavigationItems({ userRole: user?.role });
 
   const handleNavigation = (href: string, itemName: string) => {
     if (pathname === href) return; // Don't navigate to current page
@@ -84,14 +76,14 @@ export default function AppLayout({ children, user }: LayoutProps) {
               <XMarkIcon className="h-6 w-6 text-white" />
             </button>
           </div>
-          <SidebarContent navigation={navigationWithUsers} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} />
+          <SidebarContent navigation={navigationWithUsers} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} t={t} />
         </div>
       </div>
 
       {/* Desktop sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64">
-          <SidebarContent navigation={navigationWithUsers} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} />
+          <SidebarContent navigation={navigationWithUsers} pathname={pathname} user={user} onNavigate={handleNavigation} isLoading={isLoading} t={t} />
         </div>
       </div>
 
@@ -108,7 +100,7 @@ export default function AppLayout({ children, user }: LayoutProps) {
           <div className="flex-1 px-4 flex justify-between items-center">
             <div className="flex-1">
               <h1 className="text-lg font-semibold text-gray-900 md:hidden">
-                Time Tracker
+                {t('timeTracker')}
               </h1>
             </div>
             
@@ -119,10 +111,13 @@ export default function AppLayout({ children, user }: LayoutProps) {
               </div>
             </div>
             
-            <div className="ml-4 flex items-center md:ml-6">
+            <div className="ml-4 flex items-center md:ml-6 space-x-4">
+              {/* Language Switcher */}
+              <LanguageSwitcher variant="header" />
+              
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-500">
-                  Welcome back!
+                  {t('welcomeBack')}
                 </span>
                 <div className="h-8 w-8 bg-blue-500 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-white">U</span>
@@ -150,7 +145,7 @@ export default function AppLayout({ children, user }: LayoutProps) {
   );
 }
 
-function SidebarContent({ navigation, pathname, user, onNavigate, isLoading }: { 
+function SidebarContent({ navigation, pathname, user, onNavigate, isLoading, t }: { 
   navigation: NavigationItem[], 
   pathname: string,
   user?: {
@@ -160,13 +155,14 @@ function SidebarContent({ navigation, pathname, user, onNavigate, isLoading }: {
   };
   onNavigate: (href: string, name: string) => void;
   isLoading: boolean;
+  t: (key: string) => string;
 }) {
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
       {/* Logo */}
       <div className="flex items-center h-16 flex-shrink-0 px-4 bg-blue-600">
         <ClockIcon className="h-8 w-8 text-white mr-3" />
-        <h1 className="text-xl font-bold text-white">TimeTracker</h1>
+        <h1 className="text-xl font-bold text-white">{t('timeTracker')}</h1>
       </div>
       
       {/* Navigation */}

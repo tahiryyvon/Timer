@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 
 interface User {
   id: string;
@@ -31,6 +32,7 @@ interface EditingUser {
 }
 
 export default function UserManagementClient({ currentUser, users }: UserManagementClientProps) {
+  const t = useTranslations('users');
   const [editingUser, setEditingUser] = useState<EditingUser | null>(null);
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -108,7 +110,7 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
       window.location.reload();
     } catch (error) {
       console.error('Error updating user:', error);
-      alert('Failed to update user. Please try again.');
+      alert(t('failedToUpdateUser'));
     } finally {
       setIsUpdating(null);
       setEditingUser(null);
@@ -158,7 +160,7 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
       }
     } catch (error) {
       console.error('Error exporting time entries:', error);
-      alert('Failed to export time entries. Please try again.');
+      alert(t('failedToExportTimeEntries'));
     } finally {
       setExportingUserId(null);
     }
@@ -206,7 +208,7 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
       }
     } catch (error) {
       console.error('Error exporting all users time entries:', error);
-      alert('Failed to export all users time entries. Please try again.');
+      alert(t('failedToExportAllUsers'));
     } finally {
       setExportingAll(false);
     }
@@ -228,8 +230,8 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.924-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-red-900 mb-2">Access Denied</h3>
-            <p className="text-red-700">You don&apos;t have permission to access user management. Only HR and Manager roles can manage users.</p>
+            <h3 className="text-lg font-semibold text-red-900 mb-2">{t('accessDenied')}</h3>
+            <p className="text-red-700">{t('noPermissionMessage')}</p>
           </div>
         </div>
       </div>
@@ -242,9 +244,9 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('userManagement')}</h1>
             <p className="text-gray-600 mt-2">
-              Manage user accounts, roles, and permissions.
+              {t('manageUserAccounts')}
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -259,19 +261,19 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Generating Excel...
+                  {t('generatingExcel')}
                 </>
               ) : (
                 <>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  Export All (Multi-Sheet Excel)
+                  {t('exportAllUsers')}
                 </>
               )}
             </button>
             <div className="text-sm text-gray-500">
-              {users.length} total users
+              {users.length} {t('totalUsers')}
             </div>
           </div>
         </div>
@@ -281,7 +283,7 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
           <div className="relative">
             <input
               type="text"
-              placeholder="Search users by name, email, or role..."
+              placeholder={t('searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
@@ -300,16 +302,16 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User
+                  {t('user')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role
+                  {t('role')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Activity
+                  {t('activity')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  {t('actions')}
                 </th>
               </tr>
             </thead>
@@ -327,14 +329,14 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {user.name || 'Unnamed User'}
+                          {user.name || t('unnamedUser')}
                         </div>
                         <div className="text-sm text-gray-500">
                           {user.email}
                         </div>
                         {user.id === currentUser.id && (
                           <div className="text-xs text-blue-600 font-medium">
-                            (You)
+                            {t('you')}
                           </div>
                         )}
                       </div>
@@ -351,13 +353,13 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
-                        {user._count.tasks} tasks
+                        {user._count.tasks} {t('tasks')}
                       </span>
                       <span className="flex items-center">
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        {user._count.timeEntries} entries
+                        {user._count.timeEntries} {t('entries')}
                       </span>
                     </div>
                   </td>
@@ -370,7 +372,7 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
-                        Edit
+                        {t('edit')}
                       </button>
                       <button
                         onClick={() => handleExportTimeEntries(user.id, user.name)}
@@ -383,14 +385,14 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Exporting...
+                            {t('exporting')}
                           </>
                         ) : (
                           <>
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            Export Excel
+                            {t('exportExcel')}
                           </>
                         )}
                       </button>
@@ -407,8 +409,8 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
             <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
-            <p className="text-gray-600">Try adjusting your search criteria.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noUsersFound')}</h3>
+            <p className="text-gray-600">{t('adjustSearchCriteria')}</p>
           </div>
         )}
       </div>
@@ -418,42 +420,42 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg max-w-md w-full mx-4">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Edit User</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('editUser')}</h3>
             </div>
             
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('name')}</label>
                 <input
                   type="text"
                   value={editingUser.name}
                   onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="User's full name"
+                  placeholder={t('fullNamePlaceholder')}
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('email')}</label>
                 <input
                   type="email"
                   value={editingUser.email}
                   onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="user@example.com"
+                  placeholder={t('emailPlaceholder')}
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('role')}</label>
                 <select
                   value={editingUser.role}
                   onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                 >
-                  <option value="EMPLOYEE">👨‍💼 Employee</option>
-                  <option value="MANAGER">👔 Manager</option>
-                  <option value="HR">🏢 HR</option>
+                  <option value="EMPLOYEE">{t('employee')}</option>
+                  <option value="MANAGER">{t('manager')}</option>
+                  <option value="HR">{t('hr')}</option>
                 </select>
               </div>
             </div>
@@ -466,7 +468,7 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleSaveUser}
@@ -479,14 +481,14 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Saving...
+                    {t('saving')}
                   </>
                 ) : (
                   <>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Save Changes
+                    {t('saveChanges')}
                   </>
                 )}
               </button>

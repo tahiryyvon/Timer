@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 import { 
   PlayIcon,
   BookmarkIcon 
@@ -20,6 +21,7 @@ export interface TaskData {
 }
 
 export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTaskModalProps) {
+  const t = useTranslations('tasks');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -62,19 +64,19 @@ export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTas
   const isFormValid = title.trim().length > 0;
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Create New Task">
+    <Modal isOpen={isOpen} onClose={handleClose} title={t('createNewTask')}>
       <div className="space-y-6">
         {/* Task Title */}
         <div>
           <label htmlFor="task-title" className="block text-sm font-medium text-gray-700 mb-2">
-            Task Title <span className="text-red-500">*</span>
+            {t('taskTitleRequired')}
           </label>
           <input
             id="task-title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter task title..."
+            placeholder={t('enterTaskTitlePlaceholder')}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
             disabled={isLoading}
           />
@@ -83,13 +85,13 @@ export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTas
         {/* Task Description */}
         <div>
           <label htmlFor="task-description" className="block text-sm font-medium text-gray-700 mb-2">
-            Description
+            {t('description')}
           </label>
           <textarea
             id="task-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter task description (optional)..."
+            placeholder={t('enterTaskDescriptionPlaceholder')}
             rows={4}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical transition-colors text-gray-900 placeholder-gray-500"
             disabled={isLoading}
@@ -105,7 +107,7 @@ export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTas
             className="flex items-center justify-center px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <BookmarkIcon className="h-5 w-5 mr-2" />
-            {isLoading ? 'Saving...' : 'Save Task'}
+            {isLoading ? t('saving') : t('saveTask')}
           </button>
 
           {/* Save and Start Button */}
@@ -115,7 +117,7 @@ export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTas
             className="flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             <PlayIcon className="h-5 w-5 mr-2" />
-            {isLoading ? 'Starting...' : 'Save & Start Now'}
+            {isLoading ? t('starting') : t('saveAndStartNow')}
           </button>
         </div>
 
@@ -126,7 +128,7 @@ export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTas
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
             <span>
-              <strong>Note:</strong> Starting this task will automatically stop any currently running timer.
+              <strong>{t('note')}</strong> {t('noteStopTimer')}
             </span>
           </div>
         </div>
@@ -138,7 +140,7 @@ export function NewTaskModal({ isOpen, onClose, onSave, onSaveAndStart }: NewTas
             disabled={isLoading}
             className="w-full px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors disabled:opacity-50"
           >
-            Cancel
+            {t('cancel')}
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { ClockIcon } from '@heroicons/react/24/outline';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 
 interface TimeEntry {
   id: string;
@@ -12,6 +13,7 @@ interface TimeEntry {
 }
 
 export function PersistentTimer() {
+  const t = useTranslations('timer');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeEntry, setActiveEntry] = useState<TimeEntry | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +89,7 @@ export function PersistentTimer() {
       <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2">
         <ClockIcon className="h-5 w-5 text-gray-400 mr-2" />
         <span className="font-mono text-lg text-gray-400">00:00:00</span>
-        <span className="text-sm text-gray-500 ml-2">No active timer</span>
+        <span className="text-sm text-gray-500 ml-2">{t('noActiveTimer')}</span>
       </div>
     );
   }

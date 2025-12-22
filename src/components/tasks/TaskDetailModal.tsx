@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 import { 
   ClockIcon, 
   CalendarIcon, 
@@ -38,6 +39,7 @@ interface TaskDetailModalProps {
 }
 
 export function TaskDetailModal({ isOpen, onClose, taskId, onStartTimer }: TaskDetailModalProps) {
+  const t = useTranslations('timer');
   const [task, setTask] = useState<TaskDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -224,7 +226,7 @@ export function TaskDetailModal({ isOpen, onClose, taskId, onStartTimer }: TaskD
                 <div className="flex items-center">
                   <ClockIcon className="h-6 w-6 text-blue-600 mr-3" />
                   <div>
-                    <p className="text-blue-800 text-sm font-medium">Total Time</p>
+                    <p className="text-blue-800 text-sm font-medium">{t('totalTime')}</p>
                     <p className="text-blue-900 text-xl font-bold">{formatTime(getTotalTimeIncludingCurrent())}</p>
                     {task.timeEntries.some(entry => entry.endTime === null) && (
                       <p className="text-blue-600 text-xs animate-pulse">● Currently running</p>
@@ -237,7 +239,7 @@ export function TaskDetailModal({ isOpen, onClose, taskId, onStartTimer }: TaskD
                 <div className="flex items-center">
                   <PlayIcon className="h-6 w-6 text-green-600 mr-3" />
                   <div>
-                    <p className="text-green-800 text-sm font-medium">Sessions</p>
+                    <p className="text-green-800 text-sm font-medium">{t('sessions')}</p>
                     <p className="text-green-900 text-xl font-bold">{task.timeEntries.length}</p>
                   </div>
                 </div>
@@ -247,7 +249,7 @@ export function TaskDetailModal({ isOpen, onClose, taskId, onStartTimer }: TaskD
                 <div className="flex items-center">
                   <CalendarIcon className="h-6 w-6 text-purple-600 mr-3" />
                   <div>
-                    <p className="text-purple-800 text-sm font-medium">Created</p>
+                    <p className="text-purple-800 text-sm font-medium">{t('created')}</p>
                     <p className="text-purple-900 text-sm font-bold">{task.createdAt.toLocaleDateString()}</p>
                   </div>
                 </div>
@@ -263,7 +265,7 @@ export function TaskDetailModal({ isOpen, onClose, taskId, onStartTimer }: TaskD
                       <PlayIcon className="h-8 w-8 text-green-600 animate-pulse" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-green-900">Timer Currently Running</h3>
+                      <h3 className="text-lg font-semibold text-green-900">{t('timerCurrentlyRunning')}</h3>
                       <p className="text-green-700 text-sm">
                         Started: {task.timeEntries.find(entry => entry.endTime === null)?.startTime.toLocaleString()}
                       </p>
@@ -273,7 +275,7 @@ export function TaskDetailModal({ isOpen, onClose, taskId, onStartTimer }: TaskD
                     <p className="text-2xl font-bold text-green-900">
                       {formatTime(getCurrentRunningTime(task.timeEntries.find(entry => entry.endTime === null)!.startTime))}
                     </p>
-                    <p className="text-green-600 text-sm">Current session</p>
+                    <p className="text-green-600 text-sm">{t('currentSession')}</p>
                   </div>
                 </div>
               </div>
@@ -281,12 +283,12 @@ export function TaskDetailModal({ isOpen, onClose, taskId, onStartTimer }: TaskD
 
             {/* Time Entries */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Time Sessions</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('timeSessions')}</h3>
               {task.timeEntries.length === 0 ? (
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
                   <ClockIcon className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-600">No time entries yet</p>
-                  <p className="text-gray-500 text-sm">Start a timer to begin tracking time on this task</p>
+                  <p className="text-gray-600">{t('noTimeEntriesYet')}</p>
+                  <p className="text-gray-500 text-sm">{t('startTimerToBeginTracking')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -354,7 +356,7 @@ export function TaskDetailModal({ isOpen, onClose, taskId, onStartTimer }: TaskD
                   className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                 >
                   <PlayIcon className="h-4 w-4 mr-2" />
-                  Start Timer
+                  {t('startTimer')}
                 </button>
               )}
             </div>

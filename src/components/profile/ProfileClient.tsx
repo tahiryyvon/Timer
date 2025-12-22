@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { UserIcon, KeyIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 
 interface User {
   id: string;
@@ -15,6 +16,7 @@ interface ProfileClientProps {
 }
 
 export default function ProfileClient({ user }: ProfileClientProps) {
+  const t = useTranslations('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -48,7 +50,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   };
 
   const getPasswordUpdateText = () => {
-    if (!lastPasswordUpdate) return 'Not available';
+    if (!lastPasswordUpdate) return t('notAvailable');
     return formatDate(new Date(lastPasswordUpdate));
   };
 
@@ -78,14 +80,14 @@ export default function ProfileClient({ user }: ProfileClientProps) {
       });
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Profile updated successfully!' });
+        setMessage({ type: 'success', text: t('profileUpdatedSuccessfully') });
         setIsEditing(false);
       } else {
         const data = await response.json();
-        setMessage({ type: 'error', text: data.error || 'Failed to update profile' });
+        setMessage({ type: 'error', text: data.error || t('failedToUpdateProfile') });
       }
     } catch {
-      setMessage({ type: 'error', text: 'An error occurred while updating profile' });
+      setMessage({ type: 'error', text: t('errorUpdatingProfile') });
     } finally {
       setIsLoading(false);
     }
@@ -95,12 +97,12 @@ export default function ProfileClient({ user }: ProfileClientProps) {
     e.preventDefault();
     
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setMessage({ type: 'error', text: 'New passwords do not match' });
+      setMessage({ type: 'error', text: t('passwordsDoNotMatch') });
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      setMessage({ type: 'error', text: 'Password must be at least 6 characters long' });
+      setMessage({ type: 'error', text: t('passwordTooShort') });
       return;
     }
 
@@ -118,7 +120,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
       });
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Password updated successfully!' });
+        setMessage({ type: 'success', text: t('passwordUpdatedSuccessfully') });
         setShowPasswordForm(false);
         setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         
@@ -128,10 +130,10 @@ export default function ProfileClient({ user }: ProfileClientProps) {
         setLastPasswordUpdate(updateTime);
       } else {
         const data = await response.json();
-        setMessage({ type: 'error', text: data.error || 'Failed to update password' });
+        setMessage({ type: 'error', text: data.error || t('failedToUpdatePassword') });
       }
     } catch {
-      setMessage({ type: 'error', text: 'An error occurred while updating password' });
+      setMessage({ type: 'error', text: t('errorUpdatingPassword') });
     } finally {
       setIsLoading(false);
     }
@@ -140,8 +142,8 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
-        <p className="mt-2 text-gray-600">Manage your account settings and preferences.</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('settings')}</h1>
+        <p className="mt-2 text-gray-600">{t('manageAccount')}</p>
       </div>
 
       {message && (
@@ -160,7 +162,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <UserIcon className="h-5 w-5 text-gray-400 mr-2" />
-              <h2 className="text-lg font-semibold text-gray-900">Profile Information</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('profileInformation')}</h2>
             </div>
             {!isEditing ? (
               <button
@@ -170,7 +172,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                Edit Profile
+                {t('editProfile')}
               </button>
             ) : (
               <div className="flex space-x-2">
@@ -184,7 +186,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -192,7 +194,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 border border-transparent rounded-lg shadow-sm hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-green-600 disabled:hover:to-emerald-600 transition-all duration-200 transform hover:scale-105 disabled:transform-none"
                 >
                   <CheckIcon className="h-4 w-4" />
-                  Save Changes
+                  {t('saveChanges')}
                 </button>
               </div>
             )}
@@ -205,7 +207,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name
+                    {t('fullName')}
                   </label>
                   <input
                     type="text"
@@ -213,13 +215,13 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Enter your full name"
+                    placeholder={t('enterFullName')}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
                   />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
+                    {t('emailAddress')}
                   </label>
                   <input
                     type="email"
@@ -235,15 +237,15 @@ export default function ProfileClient({ user }: ProfileClientProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                <p className="text-gray-900 font-medium">{user.name || 'Not set'}</p>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('fullName')}</label>
+                <p className="text-gray-900 font-medium">{user.name || t('notAvailable')}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('emailAddress')}</label>
                 <p className="text-gray-900 font-medium">{user.email}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('userRole')}</label>
                 <div className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
                   user.role === 'HR' 
                     ? 'bg-purple-100 text-purple-800' 
@@ -265,14 +267,14 @@ export default function ProfileClient({ user }: ProfileClientProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <KeyIcon className="h-5 w-5 text-gray-400 mr-2" />
-              <h2 className="text-lg font-semibold text-gray-900">Password & Security</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('passwordSecurity')}</h2>
             </div>
             {!showPasswordForm ? (
               <button
                 onClick={() => setShowPasswordForm(true)}
                 className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium rounded-lg transition-colors"
               >
-                Change Password
+                {t('changePassword')}
               </button>
             ) : (
               <button
@@ -282,7 +284,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 }}
                 className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm font-medium rounded-lg transition-colors"
               >
-                Cancel
+                {t('cancel')}
               </button>
             )}
           </div>
@@ -295,7 +297,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                      Current Password
+                      {t('currentPassword')}
                     </label>
                     <input
                       type="password"
@@ -309,7 +311,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   </div>
                   <div>
                     <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                      New Password
+                      {t('newPassword')}
                     </label>
                     <input
                       type="password"
@@ -324,7 +326,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   </div>
                   <div>
                     <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                      Confirm New Password
+                      {t('confirmNewPassword')}
                     </label>
                     <input
                       type="password"
@@ -344,7 +346,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                     disabled={isLoading}
                     className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
                   >
-                    {isLoading ? 'Updating...' : 'Update Password'}
+                    {isLoading ? t('updating') : t('updatePassword')}
                   </button>
                 </div>
               </div>
@@ -354,8 +356,8 @@ export default function ProfileClient({ user }: ProfileClientProps) {
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-900 font-medium">Password</p>
-                <p className="text-sm text-gray-600">Last updated: {getPasswordUpdateText()}</p>
+                <p className="text-gray-900 font-medium">{t('password')}</p>
+                <p className="text-sm text-gray-600">{t('lastUpdated')}: {getPasswordUpdateText()}</p>
               </div>
               <div className="text-gray-400">
                 ••••••••

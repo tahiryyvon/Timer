@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { DocumentArrowDownIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 
 interface TimeEntry {
   id: string;
@@ -25,6 +26,7 @@ interface TimeEntriesClientProps {
 }
 
 export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
+  const t = useTranslations('timeEntries');
   const [isExporting, setIsExporting] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [startDate, setStartDate] = useState('');
@@ -117,7 +119,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
       setShowDateFilter(false);
     } catch (error) {
       console.error('Export failed:', error);
-      alert('Failed to export data. Please try again.');
+      alert(t('failedToExport'));
     } finally {
       setIsExporting(false);
     }
@@ -125,13 +127,13 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
 
   const handleDeleteTimeEntry = async (entryId: string, taskTitle: string, startTime: Date) => {
     if (!canDeleteResources()) {
-      alert('You do not have permission to delete time entries. Only HR and Managers can delete time entries.');
+      alert(t('noPermissionDeleteEntry'));
       return;
     }
 
     const formattedStartTime = new Date(startTime).toLocaleString();
     const confirmed = confirm(
-      `Are you sure you want to delete this time entry?\n\nTask: ${taskTitle}\nStart Time: ${formattedStartTime}\n\nThis action cannot be undone.`
+      `${t('deleteTimeEntryConfirm')}\n\n${t('task')}: ${taskTitle}\n${t('startTime')}: ${formattedStartTime}\n\n${t('deleteUndoWarning')}`
     );
 
     if (!confirmed) return;
@@ -149,14 +151,14 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
         throw new Error(result.error || 'Failed to delete time entry');
       }
 
-      alert(`Time entry for "${taskTitle}" has been deleted successfully.`);
+      alert(`${t('timeEntryDeleted')} "${taskTitle}" ${t('deletedSuccessfully')}`);
       
       // Refresh the page to show updated time entries list
       window.location.reload();
       
     } catch (error) {
       console.error('Error deleting time entry:', error);
-      alert('Failed to delete time entry. Please try again.');
+      alert(t('failedToDeleteEntry'));
     } finally {
       setIsDeletingEntry(null);
     }
@@ -170,14 +172,14 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Time Tracking</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('timeTracking')}</h1>
             <p className="text-gray-600 mt-2">
-              View all your time entries and track your productivity.
+              {t('viewTimeEntries')}
             </p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-500">
-              {user.timeEntries.length} total entries
+              {user.timeEntries.length} {t('totalEntries')}
             </div>
             
             {/* Export Button with Dropdown */}
@@ -187,7 +189,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                 className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 <DocumentArrowDownIcon className="h-4 w-4" />
-                <span>Export to Excel</span>
+                <span>{t('exportToExcel')}</span>
               </button>
 
               {/* Date Filter Dropdown */}
@@ -198,13 +200,13 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                     onClick={() => setShowDateFilter(false)}
                   ></div>
                   <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-20 p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Export Options</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('exportOptions')}</h3>
                     
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           <CalendarIcon className="h-4 w-4 inline mr-2" />
-                          Date Range (Optional)
+                          {t('dateRange')}
                         </label>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
@@ -213,7 +215,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                               value={startDate}
                               onChange={(e) => setStartDate(e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
-                              placeholder="Start date"
+                              placeholder={t('startTime')}
                             />
                           </div>
                           <div>
@@ -222,12 +224,12 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                               value={endDate}
                               onChange={(e) => setEndDate(e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
-                              placeholder="End date"
+                              placeholder={t('endTime')}
                             />
                           </div>
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
-                          Leave empty to export all time entries
+                          {t('leaveEmptyExport')}
                         </p>
                       </div>
                       
@@ -240,12 +242,12 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                           {isExporting ? (
                             <>
                               <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                              <span>Exporting...</span>
+                              <span>{t('exporting')}</span>
                             </>
                           ) : (
                             <>
                               <DocumentArrowDownIcon className="h-4 w-4" />
-                              <span>Download Excel</span>
+                              <span>{t('downloadExcel')}</span>
                             </>
                           )}
                         </button>
@@ -253,7 +255,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                           onClick={() => setShowDateFilter(false)}
                           className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                         >
-                          Cancel
+                          {t('cancel')}
                         </button>
                       </div>
                     </div>
@@ -270,7 +272,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Today</p>
+              <p className="text-gray-600 text-sm font-medium">{t('today')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatDuration(getTotalTimeToday())}</p>
             </div>
             <div className="bg-blue-100 rounded-lg p-3">
@@ -284,7 +286,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">This Week</p>
+              <p className="text-gray-600 text-sm font-medium">{t('thisWeek')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatDuration(getTotalTimeThisWeek())}</p>
             </div>
             <div className="bg-green-100 rounded-lg p-3">
@@ -298,7 +300,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Total Entries</p>
+              <p className="text-gray-600 text-sm font-medium">{t('totalEntriesToday')}</p>
               <p className="text-2xl font-bold text-gray-900">{user.timeEntries.length}</p>
             </div>
             <div className="bg-purple-100 rounded-lg p-3">
@@ -312,7 +314,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">Total Time</p>
+              <p className="text-gray-600 text-sm font-medium">{t('totalTime')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {formatDuration(user.timeEntries.reduce((total: number, entry: TimeEntry) => total + entry.totalSeconds, 0))}
               </p>
@@ -329,7 +331,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
       {/* Time Entries List */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900">Recent Time Entries</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('recentTimeEntries')}</h2>
         </div>
         
         <div className="divide-y divide-gray-100">
@@ -358,14 +360,14 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                             <span>{formatDateTime(new Date(entry.startTime))}</span>
                             <span>—</span>
                             <span>
-                              {entry.endTime ? formatDateTime(new Date(entry.endTime)) : 'Active'}
+                              {entry.endTime ? formatDateTime(new Date(entry.endTime)) : t('active')}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <span className="font-mono text-sm text-gray-700">{formatTime(entry.totalSeconds)}</span>
                             {entry.isActive && (
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Active
+                                {t('active')}
                               </span>
                             )}
                             {canDeleteResources() && (
@@ -399,8 +401,8 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                 <span className="text-2xl">⏱️</span>
               </div>
             </div>
-            <div className="text-gray-900 font-medium mb-2">No time entries yet</div>
-            <div className="text-sm text-gray-500">Start tracking your time to see entries here</div>
+            <div className="text-gray-900 font-medium mb-2">{t('noTimeEntriesYet')}</div>
+            <div className="text-sm text-gray-500">{t('startTrackingMessage')}</div>
           </div>
         )}
       </div>

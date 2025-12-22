@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ClockIcon, PlayIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { NewTaskModal, TaskData } from '../tasks/NewTaskModal';
+import { useTranslations } from '../providers/TranslationProvider';
 
 interface TimeEntry {
   id: string;
@@ -24,6 +25,7 @@ interface TimerStartControlProps {
 }
 
 export function TimerStartControl({ compact = false }: TimerStartControlProps) {
+  const t = useTranslations('timer');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeEntry, setActiveEntry] = useState<TimeEntry | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -210,7 +212,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
             {/* Active Status Indicator */}
             <div className="flex items-center space-x-1">
               <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-green-700 text-xs font-semibold">ACTIVE</span>
+              <span className="text-green-700 text-xs font-semibold">{t('active')}</span>
             </div>
             
             {/* Timer Display */}
@@ -239,7 +241,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12v12H6z" />
                   </svg>
-                  <span>Stop</span>
+                  <span>{t('stop')}</span>
                 </>
               )}
             </button>
@@ -256,7 +258,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
             {/* Active Status Indicator */}
             <div className="flex items-center space-x-2 flex-shrink-0">
               <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse shadow-lg"></div>
-              <span className="text-green-700 text-sm font-semibold">ACTIVE</span>
+              <span className="text-green-700 text-sm font-semibold">{t('active')}</span>
             </div>
             
             {/* Timer Display */}
@@ -287,14 +289,14 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
             {startingTimer ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                <span>Stopping...</span>
+                <span>{t('stopping')}</span>
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12v12H6z" />
                 </svg>
-                <span>Stop Timer</span>
+                <span>{t('stopTimer')}</span>
               </>
             )}
           </button>
@@ -322,7 +324,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
               className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded text-sm shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:transform-none"
             >
               <PlayIcon className="h-4 w-4 mr-2" />
-              <span>Start</span>
+              <span>{t('start')}</span>
             </button>
           </div>
 
@@ -335,15 +337,15 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
               ></div>
               <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
                 <div className="p-3">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Select a task to start</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">{t('selectTaskToStart')}</h3>
                   <div className="space-y-1 max-h-32 overflow-y-auto">
                     {loading ? (
                       <div className="flex items-center justify-center py-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
-                        <span className="ml-2 text-sm text-gray-500">Loading...</span>
+                        <span className="ml-2 text-sm text-gray-500">{t('loading')}</span>
                       </div>
                     ) : tasks.length === 0 ? (
-                      <p className="text-sm text-gray-500 py-2">No available tasks</p>
+                      <p className="text-sm text-gray-500 py-2">{t('noAvailableTasks')}</p>
                     ) : (
                       tasks.map((task) => (
                         <button
@@ -367,7 +369,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
                       className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded transition-colors duration-150"
                     >
                       <PlusIcon className="h-4 w-4 mr-2" />
-                      <span>New Task</span>
+                      <span>{t('newTask')}</span>
                     </button>
                   </div>
                 </div>
@@ -397,7 +399,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
             <ClockIcon className="h-6 w-6 text-gray-400 mr-3" />
             <div>
               <span className="font-mono text-xl text-gray-400">00:00:00</span>
-              <div className="text-sm text-gray-500">No active timer</div>
+              <div className="text-sm text-gray-500">{t('noActiveTimer')}</div>
             </div>
           </div>
           
@@ -408,7 +410,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
             className="relative flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:transform-none group"
           >
             <PlayIcon className="h-5 w-5 mr-3 group-hover:animate-pulse" />
-            <span className="text-lg">Start Timer</span>
+            <span className="text-lg">{t('startTimer')}</span>
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 rounded-lg transition-opacity duration-200"></div>
           </button>
         </div>
@@ -436,8 +438,8 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
                   <PlusIcon className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Create New Task</div>
-                  <div className="text-sm text-gray-500">Start working on something new</div>
+                  <div className="font-semibold text-gray-900">{t('createNewTask')}</div>
+                  <div className="text-sm text-gray-500">{t('startWorkingNew')}</div>
                 </div>
               </button>
 
@@ -445,7 +447,7 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
               {tasks.length > 0 ? (
                 <>
                   <div className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50 border-b border-gray-100">
-                    Select Existing Task
+                    {t('selectExistingTask')}
                   </div>
                   <div className="max-h-64 overflow-y-auto">
                     {tasks.map((task) => (
@@ -497,8 +499,8 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
                       <span className="text-2xl">📋</span>
                     </div>
                   </div>
-                  <div className="text-gray-900 font-medium mb-2">No tasks available</div>
-                  <div className="text-sm text-gray-500">Create your first task above to get started</div>
+                  <div className="text-gray-900 font-medium mb-2">{t('noTasksAvailable')}</div>
+                  <div className="text-sm text-gray-500">{t('createFirstTask')}</div>
                 </div>
               )}
             </div>

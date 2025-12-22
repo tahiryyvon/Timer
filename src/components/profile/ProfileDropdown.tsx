@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useLoading } from '@/components/providers/LoadingProvider';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 import { 
   ChevronDownIcon,
   UserIcon,
@@ -16,6 +17,7 @@ interface ProfileDropdownProps {
 }
 
 export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: ProfileDropdownProps) {
+  const t = useTranslations('profile');
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -95,7 +97,7 @@ export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: Pr
             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <UserIcon className="h-4 w-4 mr-3 text-gray-400" />
-            Profile Settings
+            {t('settings')}
           </button>
           
           <hr className="my-1" />
@@ -105,7 +107,7 @@ export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: Pr
             className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
           >
             <ArrowRightOnRectangleIcon className="h-4 w-4 mr-3" />
-            Sign Out
+            {t('signOut')}
           </button>
         </div>
       )}

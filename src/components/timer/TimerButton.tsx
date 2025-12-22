@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { startTimer, pauseTimer, resumeTimer, stopTimer, getActiveTimeEntry } from '@/app/actions/time';
+import { useTranslations } from '@/components/providers/TranslationProvider';
 
 interface TimeEntry {
     id: string;
@@ -23,6 +24,7 @@ interface TimerButtonProps {
 }
 
 export function TimerButton({ activeTimeEntry: initialActiveEntry, userId }: TimerButtonProps) {
+  const t = useTranslations('timer');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [localTimer, setLocalTimer] = useState(0);
   const [taskTitle, setTaskTitle] = useState('');
@@ -161,27 +163,27 @@ export function TimerButton({ activeTimeEntry: initialActiveEntry, userId }: Tim
           <div className="space-y-4 max-w-md mx-auto">
             <div>
               <label htmlFor="taskTitle" className="block text-sm font-medium text-gray-700 mb-2">
-                Task Title
+                {t('taskTitle')}
               </label>
               <input
                 id="taskTitle"
                 type="text"
                 value={taskTitle}
                 onChange={(e) => setTaskTitle(e.target.value)}
-                placeholder="Enter task title (optional - defaults to 'General Work')"
+                placeholder={t('enterTaskTitlePlaceholder')}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-gray-900 placeholder-gray-500"
               />
             </div>
             
             <div>
               <label htmlFor="taskDescription" className="block text-sm font-medium text-gray-700 mb-2">
-                Task Description
+                {t('taskDescription')}
               </label>
               <textarea
                 id="taskDescription"
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
-                placeholder="Enter task description (optional)"
+                placeholder={t('enterTaskDescriptionPlaceholder')}
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical transition-colors text-gray-900 placeholder-gray-500"
               />
@@ -196,7 +198,7 @@ export function TimerButton({ activeTimeEntry: initialActiveEntry, userId }: Tim
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Start Timer
+              {t('startTimer')}
             </button>
           </div>
         </div>

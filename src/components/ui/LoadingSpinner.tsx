@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from '@/components/providers/TranslationProvider';
+
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -22,6 +24,8 @@ interface PageLoadingProps {
 }
 
 export function PageLoading({ route }: PageLoadingProps) {
+  const t = useTranslations('common');
+  
   return (
     <div className="fixed inset-0 bg-white bg-opacity-90 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="flex flex-col items-center space-y-6 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
@@ -31,10 +35,10 @@ export function PageLoading({ route }: PageLoadingProps) {
         </div>
         <div className="text-center">
           <div className="text-gray-900 font-semibold text-lg mb-2">
-            {route ? `Loading ${route}...` : 'Loading...'}
+            {route ? `${t('loading')} ${route}...` : t('loading')}
           </div>
           <div className="text-gray-500 text-sm">
-            Please wait a moment
+            {t('pleaseWait')}
           </div>
         </div>
       </div>
@@ -43,13 +47,15 @@ export function PageLoading({ route }: PageLoadingProps) {
 }
 
 export function NavigationLoading({ isActive }: { isActive: boolean }) {
+  const t = useTranslations('common');
+  
   if (!isActive) return null;
 
   return (
     <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-blue-100 bg-opacity-95 rounded-lg flex items-center justify-center backdrop-blur-sm">
       <div className="flex items-center space-x-2">
         <LoadingSpinner size="sm" />
-        <span className="text-blue-700 text-sm font-medium">Loading...</span>
+        <span className="text-blue-700 text-sm font-medium">{t('loading')}</span>
       </div>
     </div>
   );
