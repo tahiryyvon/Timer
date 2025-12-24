@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Timer App",
-  description: "A modern time tracking application with multi-language support",
+  description: "A modern time tracking application",
 };
 
 export default function RootLayout({
