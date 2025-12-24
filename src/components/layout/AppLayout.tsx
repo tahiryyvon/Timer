@@ -13,6 +13,7 @@ import { ProfileDropdown } from '@/components/profile/ProfileDropdown';
 import { useLoading } from '@/components/providers/LoadingProvider';
 import { NavigationLoading, PageLoading } from '@/components/ui/LoadingSpinner';
 import LanguageSwitcher from '@/components/language/LanguageSwitcherHeader';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useNavigationItems } from '@/components/navigation/NavigationItems';
 import { useTranslations } from '@/components/providers/TranslationProvider';
 
@@ -49,7 +50,7 @@ export default function AppLayout({ children, user }: LayoutProps) {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-50">
+    <div className="h-screen flex overflow-hidden theme-page-bg">
       {/* Global Page Loading Overlay */}
       {isLoading && <PageLoading />}
       
@@ -90,16 +91,16 @@ export default function AppLayout({ children, user }: LayoutProps) {
       {/* Main content */}
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
         {/* Top navigation */}
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow border-b border-gray-200">
+        <div className="relative z-10 flex-shrink-0 flex h-16 theme-header shadow border-b">
           <button
-            className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 md:hidden"
+            className="px-4 border-r theme-text-secondary focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 md:hidden"
             onClick={() => setSidebarOpen(true)}
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
           <div className="flex-1 px-4 flex justify-between items-center">
             <div className="flex-1">
-              <h1 className="text-lg font-semibold text-gray-900 md:hidden">
+              <h1 className="text-lg font-semibold theme-text-primary md:hidden">
                 {t('timeTracker')}
               </h1>
             </div>
@@ -116,21 +117,20 @@ export default function AppLayout({ children, user }: LayoutProps) {
               <LanguageSwitcher variant="header" />
               
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm theme-text-secondary">
                   {t('welcomeBack')}
                 </span>
-                <div className="h-8 w-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-white">U</span>
-                </div>
+                {/* Theme Toggle */}
+                <ThemeToggle />
               </div>
             </div>
           </div>
         </div>
 
         {/* Page content */}
-        <main className="flex-1 relative overflow-y-auto focus:outline-none bg-gray-50">
+        <main className="flex-1 relative overflow-y-auto focus:outline-none" style={{ backgroundColor: 'var(--background)' }}>
           {/* Mobile Timer Start Control */}
-          <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+          <div className="md:hidden theme-card border-b px-4 py-3">
             <TimerStartControl />
           </div>
           
@@ -158,7 +158,7 @@ function SidebarContent({ navigation, pathname, user, onNavigate, isLoading, t }
   t: (key: string) => string;
 }) {
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
+    <div className="flex flex-col h-full theme-sidebar border-r">
       {/* Logo */}
       <div className="flex items-center h-16 flex-shrink-0 px-4 bg-blue-600">
         <ClockIcon className="h-8 w-8 text-white mr-3" />
@@ -177,7 +177,7 @@ function SidebarContent({ navigation, pathname, user, onNavigate, isLoading, t }
                   className={`group flex items-center px-2 py-3 text-sm font-medium rounded-lg transition-colors duration-200 w-full text-left ${
                     isActive
                       ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-600'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      : 'theme-text-secondary theme-hover'
                   }`}
                 >
                   <item.icon
@@ -198,7 +198,7 @@ function SidebarContent({ navigation, pathname, user, onNavigate, isLoading, t }
       </div>
 
       {/* Footer with Profile Dropdown */}
-      <div className="flex-shrink-0 border-t border-gray-200 p-4">
+      <div className="flex-shrink-0 border-t p-4" style={{ borderColor: 'var(--sidebar-border)' }}>
         <ProfileDropdown 
           userName={user?.name || user?.email || "User"} 
           userRole={user?.role || "Employee"} 

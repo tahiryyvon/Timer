@@ -37,20 +37,20 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Background overlay */}
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 theme-overlay transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal panel */}
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden">
+      <div className="relative theme-modal rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
+        <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'var(--card-border)' }}>
+          <h3 className="text-lg font-semibold theme-text-primary">
             {title}
           </h3>
           <button
             onClick={onClose}
-            className="rounded-md text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 p-1"
+            className="rounded-md theme-text-secondary hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 p-1"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>

@@ -3,29 +3,106 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --header-bg: #ffffff;
+  --header-border: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e5e7eb;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --hover-bg: #f9fafb;
+  --button-bg: #3b82f6;
+  --button-hover: #2563eb;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --modal-bg: #ffffff;
+  --modal-overlay: rgba(0, 0, 0, 0.5);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Dark mode variables */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --header-bg: #1f2937;
+  --header-border: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --sidebar-bg: #1f2937;
+  --sidebar-border: #374151;
+  --card-bg: #1f2937;
+  --card-border: #374151;
+  --hover-bg: #374151;
+  --button-bg: #3b82f6;
+  --button-hover: #2563eb;
+  --input-bg: #374151;
+  --input-border: #6b7280;
+  --modal-bg: #1f2937;
+  --modal-overlay: rgba(0, 0, 0, 0.8);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Force dark text color for all form inputs regardless of color scheme */
+/* Ensure the main page background uses the theme */
+.theme-page-bg {
+  background-color: var(--background) !important;
+}
+
+/* Theme classes using CSS variables */
+.theme-header {
+  background-color: var(--header-bg) !important;
+  border-color: var(--header-border) !important;
+}
+
+.theme-sidebar {
+  background-color: var(--sidebar-bg) !important;
+  border-color: var(--sidebar-border) !important;
+}
+
+.theme-card {
+  background-color: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+}
+
+.theme-text-primary {
+  color: var(--text-primary) !important;
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.theme-hover:hover {
+  background-color: var(--hover-bg) !important;
+}
+
+.theme-input {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-modal {
+  background-color: var(--modal-bg) !important;
+}
+
+.theme-overlay {
+  background-color: var(--modal-overlay) !important;
+}
+
+/* Form inputs */
 input, textarea, select {
-  color: #1f2937 !important; /* text-gray-800 */
+  color: var(--text-primary) !important;
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Ensure placeholder text is visible */
 input::placeholder, textarea::placeholder {
-  color: #6b7280 !important; /* text-gray-500 */
+  color: var(--text-secondary) !important;
 }

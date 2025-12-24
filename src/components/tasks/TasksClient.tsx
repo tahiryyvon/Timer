@@ -223,16 +223,16 @@ export default function TasksClient({ user }: TasksClientProps) {
     <>
       <div className="space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="theme-card rounded-xl shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('taskManagement')}</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold theme-text-primary">{t('taskManagement')}</h1>
+              <p className="theme-text-secondary mt-2">
                 {t('manageYourTasks')}
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm theme-text-secondary">
                 {user.tasks.length} {t('totalTasksCount')}
               </div>
               <button 

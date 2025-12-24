@@ -86,17 +86,17 @@ export function ProfileDropdown({ userName = 'User', userRole = 'Employee' }: Pr
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-          <div className="px-4 py-2 border-b border-gray-100">
-            <p className="text-sm font-medium text-gray-900">{userName}</p>
-            <p className="text-xs text-gray-500">{userRole}</p>
+        <div className="absolute bottom-full left-0 right-0 mb-2 theme-modal rounded-lg shadow-lg border py-1 z-50" style={{ borderColor: 'var(--card-border)' }}>
+          <div className="px-4 py-2 border-b" style={{ borderColor: 'var(--card-border)' }}>
+            <p className="text-sm font-medium theme-text-primary">{userName}</p>
+            <p className="text-xs theme-text-secondary">{userRole}</p>
           </div>
           
           <button
             onClick={handleProfileClick}
-            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center w-full px-4 py-2 text-sm theme-text-primary theme-hover transition-colors"
           >
-            <UserIcon className="h-4 w-4 mr-3 text-gray-400" />
+            <UserIcon className="h-4 w-4 mr-3 theme-text-secondary" />
             {t('settings')}
           </button>
           

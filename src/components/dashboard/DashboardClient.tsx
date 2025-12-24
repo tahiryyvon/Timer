@@ -77,13 +77,13 @@ export default function DashboardClient({
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="theme-card rounded-xl shadow-sm border p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold theme-text-primary">
               {t('welcomeMessage').replace('{name}', user.name || 'User')}
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="theme-text-secondary mt-2">
               {t('trackTimeMessage')}
             </p>
           </div>
@@ -123,10 +123,10 @@ export default function DashboardClient({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Timer Section - Takes up 2 columns on large screens */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="theme-card rounded-xl shadow-sm border p-8">
             <div className="text-center space-y-6">
-              <h2 className="text-2xl font-semibold text-gray-800">{t('timeTracker')}</h2>
-              <p className="text-gray-600">
+              <h2 className="text-2xl font-semibold theme-text-primary">{t('timeTracker')}</h2>
+              <p className="theme-text-secondary">
                 {t('startTrackingMessage')}
               </p>
               
@@ -136,7 +136,7 @@ export default function DashboardClient({
               </div>
 
               {/* Quick Actions */}
-              <div className="border-t border-gray-100 pt-6">
+              <div className="border-t pt-6" style={{ borderColor: 'var(--card-border)' }}>
                 <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">{user.timeEntries.length}</div>
@@ -204,20 +204,20 @@ export default function DashboardClient({
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">{t('recentActivity')}</h3>
+      <div className="theme-card rounded-xl shadow-sm border p-6">
+        <h3 className="text-lg font-semibold theme-text-primary mb-4">{t('recentActivity')}</h3>
         {user.timeEntries && user.timeEntries.length > 0 ? (
           <div className="space-y-3">
             {user.timeEntries.slice(0, 5).map((entry: TimeEntry) => (
-              <div key={entry.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <div key={entry.id} className="flex items-center justify-between p-4 rounded-lg transition-colors" style={{ backgroundColor: 'var(--hover-bg)' }}>
                 <div className="flex items-center space-x-4">
                   <div className={`w-3 h-3 rounded-full ${entry.isActive ? 'bg-green-400 animate-pulse' : 'bg-gray-300'}`}></div>
                   <div>
-                    <p className="font-medium text-gray-900">{entry.task.title}</p>
-                    <p className="text-sm text-gray-500">{new Date(entry.startTime).toLocaleDateString()}</p>
+                    <p className="font-medium theme-text-primary">{entry.task.title}</p>
+                    <p className="text-sm theme-text-secondary">{new Date(entry.startTime).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <div className="text-sm font-medium text-gray-700">
+                <div className="text-sm font-medium theme-text-secondary">
                   {formatTime(entry.totalSeconds)}
                 </div>
               </div>
