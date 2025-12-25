@@ -34,6 +34,7 @@ export default function TasksClient({ user }: TasksClientProps) {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
   const [isDeletingTask, setIsDeletingTask] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const canDeleteResources = () => {
     return user.role === 'HR' || user.role === 'MANAGER';
@@ -59,6 +60,52 @@ export default function TasksClient({ user }: TasksClientProps) {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  // Filter tasks based on search query
+  const filteredTasks = user.tasks.filter((task) => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    
+    // Basic text search
+    const textMatch = (
+      task.title.toLowerCase().includes(query) ||
+      (task.description && task.description.toLowerCase().includes(query))
+    );
+    
+    // Time-based search
+    const totalSeconds = getTotalTime(task);
+    const totalMinutes = totalSeconds / 60;
+    
+    // Parse time queries (e.g., "2h", "30min", ">1h", "<45min")
+    const timeMatch = (() => {
+      // Match patterns like "2h", "30min", "1h30m", etc.
+      const timePattern = /^([><!]?)(\d+(?:\.\d+)?)(h|hours?|m|min|minutes?)$/i;
+      
+      const match = query.match(timePattern);
+      if (!match) return false;
+      
+      const operator = match[1] || '=';
+      const value = parseFloat(match[2]);
+      const unit = match[3].toLowerCase();
+      
+      // Convert to minutes for comparison
+      const searchMinutes = unit.startsWith('h') ? value * 60 : value;
+      
+      switch (operator) {
+        case '>':
+          return totalMinutes > searchMinutes;
+        case '<':
+          return totalMinutes < searchMinutes;
+        case '!':
+          return Math.abs(totalMinutes - searchMinutes) > 5; // 5-minute tolerance
+        default:
+          return Math.abs(totalMinutes - searchMinutes) <= 5; // 5-minute tolerance for exact match
+      }
+    })();
+    
+    return textMatch || timeMatch;
+  });
 
   const handleSaveTask = async (taskData: TaskData) => {
     // Prevent double submissions
@@ -245,6 +292,35 @@ export default function TasksClient({ user }: TasksClientProps) {
           </div>
         </div>
 
+        {/* Search Bar */}
+        <div className="theme-card rounded-xl shadow-sm p-4" style={{ border: '1px solid var(--card-border)' }}>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 theme-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('searchTasksPlaceholder')}
+              className="w-full pl-10 pr-10 py-3 theme-input rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 theme-text-primary placeholder:theme-text-secondary"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center theme-text-secondary hover:theme-text-primary transition-colors"
+                title={t('clearSearch')}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
@@ -332,8 +408,24 @@ export default function TasksClient({ user }: TasksClientProps) {
                   </button>
                 </div>
               </div>
+            ) : filteredTasks.length === 0 ? (
+              <div className="p-8 text-center">
+                <div className="rounded-lg p-8 max-w-md mx-auto" style={{ backgroundColor: 'var(--hover-bg)' }}>
+                  <svg className="w-16 h-16 theme-text-secondary mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <h3 className="text-lg font-medium theme-text-primary mb-2">{t('noSearchResults')}</h3>
+                  <p className="theme-text-secondary mb-4">Try adjusting your search criteria</p>
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    {t('clearSearch')}
+                  </button>
+                </div>
+              </div>
             ) : (
-              user.tasks.map((task: Task) => {
+              filteredTasks.map((task: Task) => {
                 const hasRunningTimer = task.timeEntries.some(entry => entry.endTime === null);
                 return (
                   <div 

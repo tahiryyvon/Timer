@@ -32,6 +32,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isDeletingEntry, setIsDeletingEntry] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const canDeleteResources = () => {
     return user.role === 'HR' || user.role === 'MANAGER';
@@ -82,9 +83,95 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
       .reduce((total: number, entry: TimeEntry) => total + entry.totalSeconds, 0);
   };
 
-  const groupEntriesByDate = () => {
+  // Filter time entries based on search query
+  const filteredTimeEntries = user.timeEntries.filter((entry: TimeEntry) => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase().trim();
+    
+    // Text-based search
+    const textMatch = entry.task.title.toLowerCase().includes(query) ||
+      (entry.task.description && entry.task.description.toLowerCase().includes(query));
+    
+    if (textMatch) return true;
+    
+    // Time-based search
+    const startTime = new Date(entry.startTime);
+    const endTime = entry.endTime ? new Date(entry.endTime) : null;
+    const duration = endTime ? (endTime.getTime() - startTime.getTime()) / (1000 * 60) : 0; // in minutes
+    
+    // Parse time queries (e.g., "2h", "30min", ">1h", "<45min")
+    const timeMatch = (() => {
+      const timePattern = /^([><!]?)(\d+(?:\.\d+)?)(h|hours?|m|min|minutes?)$/i;
+      
+      const match = query.match(timePattern);
+      if (!match) return false;
+      
+      const operator = match[1] || '=';
+      const value = parseFloat(match[2]);
+      const unit = match[3].toLowerCase();
+      
+      // Convert to minutes
+      let targetMinutes: number;
+      if (unit.startsWith('h')) {
+        targetMinutes = value * 60;
+      } else {
+        targetMinutes = value;
+      }
+      
+      // Apply operator
+      switch (operator) {
+        case '>':
+          return duration > targetMinutes;
+        case '<':
+          return duration < targetMinutes;
+        case '!':
+          return Math.abs(duration - targetMinutes) > 5; // 5-minute tolerance
+        case '=':
+        default:
+          return Math.abs(duration - targetMinutes) <= 5; // 5-minute tolerance
+      }
+    })();
+    
+    if (timeMatch) return true;
+    
+    // Date-based search
+    const dateMatch = (() => {
+      const today = new Date();
+      const entryDate = new Date(startTime);
+      
+      // Normalize dates to compare only date parts
+      const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const entryDateOnly = new Date(entryDate.getFullYear(), entryDate.getMonth(), entryDate.getDate());
+      
+      if (query === 'today') {
+        return entryDateOnly.getTime() === todayDate.getTime();
+      }
+      
+      if (query === 'yesterday') {
+        const yesterday = new Date(todayDate);
+        yesterday.setDate(yesterday.getDate() - 1);
+        return entryDateOnly.getTime() === yesterday.getTime();
+      }
+      
+      if (query === 'this week') {
+        const weekStart = new Date(todayDate);
+        const dayOfWeek = weekStart.getDay();
+        weekStart.setDate(weekStart.getDate() - dayOfWeek);
+        
+        return entryDateOnly.getTime() >= weekStart.getTime() && 
+               entryDateOnly.getTime() <= todayDate.getTime();
+      }
+      
+      return false;
+    })();
+    
+    return dateMatch;
+  });
+
+  const groupFilteredEntriesByDate = () => {
     const groups: { [key: string]: TimeEntry[] } = {};
-    user.timeEntries.forEach((entry: TimeEntry) => {
+    filteredTimeEntries.forEach((entry: TimeEntry) => {
       const dateKey = new Date(entry.startTime).toDateString();
       if (!groups[dateKey]) {
         groups[dateKey] = [];
@@ -164,7 +251,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
     }
   };
 
-  const groupedEntries = groupEntriesByDate();
+  const groupedEntries = groupFilteredEntriesByDate();
 
   return (
     <div className="space-y-6">
@@ -179,7 +266,15 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
           </div>
           <div className="flex items-center space-x-4">
             <div className="text-sm theme-text-secondary">
-              {user.timeEntries.length} {t('totalEntries')}
+              {searchQuery ? (
+                <>
+                  {filteredTimeEntries.length} of {user.timeEntries.length} {t('totalEntries')}
+                </>
+              ) : (
+                <>
+                  {user.timeEntries.length} {t('totalEntries')}
+                </>
+              )}
             </div>
             
             {/* Export Button with Dropdown */}
@@ -264,6 +359,35 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="theme-card rounded-xl shadow-sm p-4" style={{ border: '1px solid var(--card-border)' }}>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 theme-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t('searchTimeEntriesPlaceholder')}
+            className="w-full pl-10 pr-10 py-3 theme-input rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 theme-text-primary placeholder:theme-text-secondary"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center theme-text-secondary hover:theme-text-primary transition-colors"
+              title={t('clearSearch')}
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
@@ -394,7 +518,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
           ))}
         </div>
         
-        {user.timeEntries.length === 0 && (
+        {user.timeEntries.length === 0 ? (
           <div className="p-12 text-center">
             <div className="mb-4">
               <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
@@ -404,7 +528,25 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
             <div className="theme-text-primary font-medium mb-2">{t('noTimeEntriesYet')}</div>
             <div className="text-sm theme-text-secondary">{t('startTrackingMessage')}</div>
           </div>
-        )}
+        ) : Object.keys(groupedEntries).length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="mb-4">
+              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+            <div className="theme-text-primary font-medium mb-2">{t('noSearchResults')}</div>
+            <div className="text-sm theme-text-secondary mb-4">Try adjusting your search criteria</div>
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              {t('clearSearch')}
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
