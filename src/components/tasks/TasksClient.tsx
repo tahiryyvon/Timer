@@ -247,11 +247,11 @@ export default function TasksClient({ user }: TasksClientProps) {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">{t('totalTasks')}</p>
-                <p className="text-2xl font-bold text-gray-900">{user.tasks.length}</p>
+                <p className="theme-text-secondary text-sm font-medium">{t('totalTasks')}</p>
+                <p className="text-2xl font-bold theme-text-primary">{user.tasks.length}</p>
               </div>
               <div className="bg-blue-100 rounded-lg p-3">
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,11 +261,11 @@ export default function TasksClient({ user }: TasksClientProps) {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">{t('openTasks')}</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="theme-text-secondary text-sm font-medium">{t('openTasks')}</p>
+                <p className="text-2xl font-bold theme-text-primary">
                   {user.tasks.filter((task: Task) => task.status === 'OPEN').length}
                 </p>
               </div>
@@ -277,11 +277,11 @@ export default function TasksClient({ user }: TasksClientProps) {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">{t('completed')}</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="theme-text-secondary text-sm font-medium">{t('completed')}</p>
+                <p className="text-2xl font-bold theme-text-primary">
                   {user.tasks.filter((task: Task) => task.status === 'COMPLETED').length}
                 </p>
               </div>
@@ -293,11 +293,11 @@ export default function TasksClient({ user }: TasksClientProps) {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">{t('totalTime')}</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="theme-text-secondary text-sm font-medium">{t('totalTime')}</p>
+                <p className="text-2xl font-bold theme-text-primary">
                   {formatTime(user.tasks.reduce((total: number, task: Task) => total + getTotalTime(task), 0))}
                 </p>
               </div>
@@ -311,18 +311,18 @@ export default function TasksClient({ user }: TasksClientProps) {
         </div>
 
         {/* Tasks List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900">{t('yourTasks')}</h2>
+        <div className="theme-card rounded-xl shadow-sm border">
+          <div className="p-6 border-b" style={{ borderColor: 'var(--card-border)' }}>
+            <h2 className="text-xl font-semibold theme-text-primary">{t('yourTasks')}</h2>
           </div>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y" style={{ borderColor: 'var(--card-border)' }}>
             {user.tasks.length === 0 ? (
               <div className="p-8 text-center">
-                <div className="bg-gray-50 rounded-lg p-8 max-w-md mx-auto">
-                  <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="rounded-lg p-8 max-w-md mx-auto" style={{ backgroundColor: 'var(--hover-bg)' }}>
+                  <svg className="w-16 h-16 theme-text-secondary mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noTasksYet')}</h3>
+                  <h3 className="text-lg font-medium theme-text-primary mb-2">{t('noTasksYet')}</h3>
                   <p className="text-gray-600 mb-4">{t('createFirstTaskDesc')}</p>
                   <button 
                     onClick={() => setIsNewTaskModalOpen(true)}
@@ -341,7 +341,7 @@ export default function TasksClient({ user }: TasksClientProps) {
                     className={`p-6 transition-colors ${
                       hasRunningTimer 
                         ? 'bg-green-50 border-l-4 border-green-500 hover:bg-green-100' 
-                        : 'hover:bg-gray-50'
+                        : 'theme-hover'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -353,7 +353,7 @@ export default function TasksClient({ user }: TasksClientProps) {
                               <span className="text-xs text-green-700 font-medium">{t('running')}</span>
                             </div>
                           )}
-                          <h3 className={`font-medium ${hasRunningTimer ? 'text-green-900' : 'text-gray-900'}`}>
+                          <h3 className={`font-medium ${hasRunningTimer ? 'text-green-900' : 'theme-text-primary'}`}>
                             {task.title}
                           </h3>
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(task.status)}`}>
@@ -361,11 +361,11 @@ export default function TasksClient({ user }: TasksClientProps) {
                           </span>
                         </div>
                         {task.description && (
-                          <p className={`text-sm mb-2 ${hasRunningTimer ? 'text-green-700' : 'text-gray-600'}`}>
+                          <p className={`text-sm mb-2 ${hasRunningTimer ? 'text-green-700' : 'theme-text-secondary'}`}>
                             {task.description}
                           </p>
                         )}
-                        <div className={`flex items-center space-x-4 text-sm ${hasRunningTimer ? 'text-green-600' : 'text-gray-500'}`}>
+                        <div className={`flex items-center space-x-4 text-sm ${hasRunningTimer ? 'text-green-600' : 'theme-text-secondary'}`}>
                 <span>{t('created')} {new Date(task.createdAt).toLocaleDateString()}</span>
                 <span>•</span>
                 <span>{t('totalTimeLabel')}: {formatTime(getTotalTime(task))}</span>

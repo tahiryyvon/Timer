@@ -169,16 +169,16 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="theme-card rounded-xl shadow-sm border p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('timeTracking')}</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-3xl font-bold theme-text-primary">{t('timeTracking')}</h1>
+            <p className="theme-text-secondary mt-2">
               {t('viewTimeEntries')}
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm theme-text-secondary">
               {user.timeEntries.length} {t('totalEntries')}
             </div>
             
@@ -199,12 +199,12 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                     className="fixed inset-0 z-10" 
                     onClick={() => setShowDateFilter(false)}
                   ></div>
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-20 p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('exportOptions')}</h3>
+                  <div className="absolute right-0 top-full mt-2 w-80 theme-modal rounded-xl shadow-2xl z-20 p-4" style={{ border: '1px solid var(--card-border)' }}>
+                    <h3 className="text-lg font-semibold theme-text-primary mb-4">{t('exportOptions')}</h3>
                     
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium theme-text-secondary mb-2">
                           <CalendarIcon className="h-4 w-4 inline mr-2" />
                           {t('dateRange')}
                         </label>
@@ -214,7 +214,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                               type="date"
                               value={startDate}
                               onChange={(e) => setStartDate(e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+                              className="w-full px-3 py-2 theme-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 theme-text-primary"
                               placeholder={t('startTime')}
                             />
                           </div>
@@ -223,12 +223,12 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                               type="date"
                               value={endDate}
                               onChange={(e) => setEndDate(e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+                              className="w-full px-3 py-2 theme-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 theme-text-primary"
                               placeholder={t('endTime')}
                             />
                           </div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs theme-text-secondary mt-1">
                           {t('leaveEmptyExport')}
                         </p>
                       </div>
@@ -253,7 +253,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                         </button>
                         <button
                           onClick={() => setShowDateFilter(false)}
-                          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                          className="px-4 py-2 theme-input theme-text-primary rounded-lg font-medium theme-hover transition-colors"
                         >
                           {t('cancel')}
                         </button>
@@ -269,11 +269,11 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">{t('today')}</p>
-              <p className="text-2xl font-bold text-gray-900">{formatDuration(getTotalTimeToday())}</p>
+              <p className="theme-text-secondary text-sm font-medium">{t('today')}</p>
+              <p className="text-2xl font-bold theme-text-primary">{formatDuration(getTotalTimeToday())}</p>
             </div>
             <div className="bg-blue-100 rounded-lg p-3">
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,11 +283,11 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">{t('thisWeek')}</p>
-              <p className="text-2xl font-bold text-gray-900">{formatDuration(getTotalTimeThisWeek())}</p>
+              <p className="theme-text-secondary text-sm font-medium">{t('thisWeek')}</p>
+              <p className="text-2xl font-bold theme-text-primary">{formatDuration(getTotalTimeThisWeek())}</p>
             </div>
             <div className="bg-green-100 rounded-lg p-3">
               <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,11 +297,11 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">{t('totalEntriesToday')}</p>
-              <p className="text-2xl font-bold text-gray-900">{user.timeEntries.length}</p>
+              <p className="theme-text-secondary text-sm font-medium">{t('totalEntriesToday')}</p>
+              <p className="text-2xl font-bold theme-text-primary">{user.timeEntries.length}</p>
             </div>
             <div className="bg-purple-100 rounded-lg p-3">
               <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,11 +311,11 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="theme-card rounded-xl shadow-sm p-6" style={{ border: '1px solid var(--card-border)' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm font-medium">{t('totalTime')}</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="theme-text-secondary text-sm font-medium">{t('totalTime')}</p>
+              <p className="text-2xl font-bold theme-text-primary">
                 {formatDuration(user.timeEntries.reduce((total: number, entry: TimeEntry) => total + entry.totalSeconds, 0))}
               </p>
             </div>
@@ -329,34 +329,34 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
       </div>
 
       {/* Time Entries List */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900">{t('recentTimeEntries')}</h2>
+      <div className="theme-card rounded-xl shadow-sm border">
+        <div className="p-6 border-b" style={{ borderColor: 'var(--card-border)' }}>
+          <h2 className="text-xl font-semibold theme-text-primary">{t('recentTimeEntries')}</h2>
         </div>
         
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y" style={{ borderColor: 'var(--card-border)' }}>
           {Object.entries(groupedEntries).map(([dateString, entries]) => (
             <div key={dateString} className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">{formatDate(new Date(dateString))}</h3>
-                <span className="text-sm text-gray-500">
+                <h3 className="text-lg font-semibold theme-text-primary">{formatDate(new Date(dateString))}</h3>
+                <span className="text-sm theme-text-secondary">
                   {formatDuration(entries.reduce((total: number, entry: TimeEntry) => total + entry.totalSeconds, 0))}
                 </span>
               </div>
               
               <div className="space-y-3">
                 {entries.map((entry: TimeEntry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div key={entry.id} className="flex items-center justify-between p-4 rounded-lg theme-hover transition-colors" style={{ backgroundColor: 'var(--hover-bg)' }}>
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">{entry.task.title}</h4>
+                          <h4 className="font-medium theme-text-primary">{entry.task.title}</h4>
                           {entry.task.description && (
-                            <p className="text-sm text-gray-600">{entry.task.description}</p>
+                            <p className="text-sm theme-text-secondary">{entry.task.description}</p>
                           )}
                         </div>
                         <div className="text-right space-y-1">
-                          <div className="flex items-center space-x-2 text-sm text-gray-500">
+                          <div className="flex items-center space-x-2 text-sm theme-text-secondary">
                             <span>{formatDateTime(new Date(entry.startTime))}</span>
                             <span>—</span>
                             <span>
@@ -364,7 +364,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-sm text-gray-700">{formatTime(entry.totalSeconds)}</span>
+                            <span className="font-mono text-sm theme-text-primary">{formatTime(entry.totalSeconds)}</span>
                             {entry.isActive && (
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 {t('active')}
@@ -401,8 +401,8 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
                 <span className="text-2xl">⏱️</span>
               </div>
             </div>
-            <div className="text-gray-900 font-medium mb-2">{t('noTimeEntriesYet')}</div>
-            <div className="text-sm text-gray-500">{t('startTrackingMessage')}</div>
+            <div className="theme-text-primary font-medium mb-2">{t('noTimeEntriesYet')}</div>
+            <div className="text-sm theme-text-secondary">{t('startTrackingMessage')}</div>
           </div>
         )}
       </div>
