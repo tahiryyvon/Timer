@@ -45,7 +45,16 @@
     "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
     "passwordsMatch": "Passwörter stimmen überein",
     "passwordMinLength": "Das Passwort muss mindestens 6 Zeichen lang sein",
-    "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein"
+    "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein",
+    "signInError": "Anmeldung fehlgeschlagen",
+    "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "signInFailed": "Anmeldung nicht möglich. Bitte überprüfen Sie Ihre Anmeldedaten und versuchen Sie es erneut.",
+    "signingIn": "Anmeldung läuft...",
+    "emailRequired": "E-Mail-Adresse ist erforderlich",
+    "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "passwordRequired": "Passwort ist erforderlich",
+    "passwordMinChars": "Passwort muss mindestens 6 Zeichen lang sein",
+    "credentialsInvalid": "Die eingegebene E-Mail oder das Passwort ist falsch"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -136,6 +145,11 @@
     "openTasks": "Offene Aufgaben",
     "yourTasks": "Ihre Aufgaben",
     "noTasksYet": "Noch keine Aufgaben",
+    "searchTasks": "Aufgaben suchen...",
+    "searchTasksPlaceholder": "Nach Aufgabentitel oder -beschreibung suchen...",
+    "searchTasksAdvancedPlaceholder": "Nach Titel, Beschreibung oder Zeit suchen (z.B. '2h', '30min', '>1h', '<45min')...",
+    "noSearchResults": "Keine Suchergebnisse gefunden",
+    "clearSearch": "Suche löschen",
     "createFirstTaskDesc": "Erstellen Sie Ihre erste Aufgabe, um mit der Zeiterfassung zu beginnen.",
     "createFirstTask": "Erste Aufgabe Erstellen",
     "created": "Erstellt",
@@ -191,7 +205,12 @@
     "ongoing": "Laufend",
     "hours": "Stunden",
     "exportExcel": "Excel exportieren",
-    "exportCsv": "CSV exportieren"
+    "exportCsv": "CSV exportieren",
+    "searchTimeEntries": "Zeiteinträge suchen...",
+    "searchTimeEntriesPlaceholder": "Nach Aufgabentitel, Beschreibung, Zeit (z.B. '2h', '30min', '>1h', '<45min') oder Datum ('today', 'yesterday', 'this week') suchen...",
+    "searchTimeEntriesAdvancedPlaceholder": "Nach Titel, Beschreibung, Zeit oder Datum suchen (z.B. 'today', 'yesterday', '2h', '>30min')...",
+    "noSearchResults": "Keine Zeiteinträge entsprechen Ihrer Suche",
+    "clearSearch": "Suche löschen"
   },
   "profile": {
     "title": "Profil",
