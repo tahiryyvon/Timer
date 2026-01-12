@@ -14,13 +14,15 @@ enum Role {
 }
 
 model User {
-  id            String      @id @default(cuid())
-  name          String?
-  email         String      @unique
-  password      String?
-  role          Role        @default(EMPLOYEE)
-  tasks         Task[]
-  timeEntries   TimeEntry[]
+  id               String      @id @default(cuid())
+  name             String?
+  email            String      @unique
+  password         String?
+  role             Role        @default(EMPLOYEE)
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  tasks            Task[]
+  timeEntries      TimeEntry[]
 }
 
 model Task {

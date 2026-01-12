@@ -38,8 +38,13 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
   const [searchTerm, setSearchTerm] = useState('');
   const [exportingUserId, setExportingUserId] = useState<string | null>(null);
   const [exportingAll, setExportingAll] = useState(false);
+  const [resetPasswordLoading, setResetPasswordLoading] = useState<string | null>(null);
 
   const canManageUsers = () => {
+    return currentUser.role === 'HR' || currentUser.role === 'MANAGER';
+  };
+
+  const canResetPasswords = () => {
     return currentUser.role === 'HR' || currentUser.role === 'MANAGER';
   };
 
@@ -211,6 +216,31 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
       alert(t('failedToExportAllUsers'));
     } finally {
       setExportingAll(false);
+    }
+  };
+
+  const handleResetPassword = async (userId: string, userEmail: string) => {
+    if (!confirm(`Send password reset link to ${userEmail}?`)) return;
+    
+    setResetPasswordLoading(userId);
+    try {
+      const response = await fetch('/api/users/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert('✅ Password reset link sent successfully!');
+      } else {
+        alert(`❌ ${data.error || 'Failed to send reset link'}`);
+      }
+    } catch (error) {
+      alert('❌ Error sending reset link');
+    } finally {
+      setResetPasswordLoading(null);
     }
   };
 
@@ -396,6 +426,30 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                           </>
                         )}
                       </button>
+                      {canResetPasswords() && (
+                        <button
+                          onClick={() => handleResetPassword(user.id, user.email)}
+                          disabled={resetPasswordLoading === user.id}
+                          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-600 to-red-600 border border-transparent rounded-lg shadow-sm hover:from-orange-700 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-orange-600 disabled:hover:to-red-600 transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+                        >
+                          {resetPasswordLoading === user.id ? (
+                            <>
+                              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v-2L4.257 10.257a6 6 0 017.743-7.743L15 7zm-6 6l6.707-6.707" />
+                              </svg>
+                              Reset Password
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
