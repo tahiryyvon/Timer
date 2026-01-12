@@ -1,16 +1,30 @@
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+// Create transporter only if SMTP is configured
+const createTransporter = () => {
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    return null;
+  }
+  
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
 
 export async function sendPasswordResetEmail(email: string, token: string) {
+  const transporter = createTransporter();
+  
+  if (!transporter) {
+    console.warn('SMTP not configured, skipping email send');
+    return { success: false, message: 'Email service not configured' };
+  }
+  
   const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}`;
   
   const mailOptions = {
@@ -38,5 +52,11 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    await transporter.sendMail(mailOptions);
+    return { success: true, message: 'Email sent successfully' };
+  } catch (error) {
+    console.error('Email send error:', error);
+    return { success: false, message: 'Failed to send email' };
+  }
 }

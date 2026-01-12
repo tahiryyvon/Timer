@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -55,7 +54,8 @@ function ResetPasswordForm() {
       } else {
         setError(data.error || 'Failed to reset password');
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Password reset error:', err);
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);

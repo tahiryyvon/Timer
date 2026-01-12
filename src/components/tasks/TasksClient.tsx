@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NewTaskModal, TaskData } from './NewTaskModal';
 import { TaskDetailModal } from './TaskDetailModal';
 import { useTranslations } from '@/components/providers/TranslationProvider';
@@ -35,6 +35,12 @@ export default function TasksClient({ user }: TasksClientProps) {
   const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
   const [isDeletingTask, setIsDeletingTask] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isClient, setIsClient] = useState(false);
+
+  // Handle client-side hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const canDeleteResources = () => {
     return user.role === 'HR' || user.role === 'MANAGER';
@@ -458,7 +464,7 @@ export default function TasksClient({ user }: TasksClientProps) {
                           </p>
                         )}
                         <div className={`flex items-center space-x-4 text-sm ${hasRunningTimer ? 'text-green-600' : 'theme-text-secondary'}`}>
-                <span>{t('created')} {new Date(task.createdAt).toLocaleDateString()}</span>
+                <span>{t('created')} {isClient ? new Date(task.createdAt).toLocaleDateString() : ''}</span>
                 <span>•</span>
                 <span>{t('totalTimeLabel')}: {formatTime(getTotalTime(task))}</span>
                 <span>•</span>

@@ -40,7 +40,16 @@ export async function POST(req: NextRequest) {
     });
 
     // Send reset email
-    await sendPasswordResetEmail(user.email, resetToken);
+    const emailResult = await sendPasswordResetEmail(user.email, resetToken);
+
+    if (!emailResult.success) {
+      console.warn('Email send failed:', emailResult.message);
+      // Still return success since the token was created
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Password reset token created (email service unavailable)' 
+      });
+    }
 
     return NextResponse.json({ 
       success: true, 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TimerStartControl } from '@/components/timer/TimerStartControl';
 import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { useTranslations } from '@/components/providers/TranslationProvider';
@@ -45,7 +45,13 @@ export default function DashboardClient({
   monthlyTotal 
 }: DashboardClientProps) {
   const [isExporting, setIsExporting] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const t = useTranslations('dashboard');
+
+  // Handle client-side hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const formatTime = (timeInSeconds: number) => {
     const hours = Math.floor(timeInSeconds / 3600);
@@ -214,7 +220,7 @@ export default function DashboardClient({
                   <div className={`w-3 h-3 rounded-full ${entry.isActive ? 'bg-green-400 animate-pulse' : 'bg-gray-300'}`}></div>
                   <div>
                     <p className="font-medium theme-text-primary">{entry.task.title}</p>
-                    <p className="text-sm theme-text-secondary">{new Date(entry.startTime).toLocaleDateString()}</p>
+                    <p className="text-sm theme-text-secondary">{isClient ? new Date(entry.startTime).toLocaleDateString() : ''}</p>
                   </div>
                 </div>
                 <div className="text-sm font-medium theme-text-secondary">

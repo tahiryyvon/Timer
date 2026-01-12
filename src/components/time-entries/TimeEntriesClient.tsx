@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DocumentArrowDownIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { useTranslations } from '@/components/providers/TranslationProvider';
 
@@ -33,6 +33,12 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
   const [endDate, setEndDate] = useState('');
   const [isDeletingEntry, setIsDeletingEntry] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isClient, setIsClient] = useState(false);
+
+  // Handle client-side hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const canDeleteResources = () => {
     return user.role === 'HR' || user.role === 'MANAGER';
@@ -52,6 +58,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
   };
 
   const formatDate = (date: Date) => {
+    if (!isClient) return ''; // Return empty string during SSR
     return new Date(date).toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
@@ -61,6 +68,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
   };
 
   const formatDateTime = (date: Date) => {
+    if (!isClient) return ''; // Return empty string during SSR
     return new Date(date).toLocaleString('en-US', {
       hour: '2-digit',
       minute: '2-digit',

@@ -237,7 +237,8 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
       } else {
         alert(`❌ ${data.error || 'Failed to send reset link'}`);
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Reset password error:', err);
       alert('❌ Error sending reset link');
     } finally {
       setResetPasswordLoading(null);
