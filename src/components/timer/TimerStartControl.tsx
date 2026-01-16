@@ -27,7 +27,7 @@ interface TimerStartControlProps {
 
 export function TimerStartControl({ compact = false }: TimerStartControlProps) {
   const t = useTranslations('timer');
-  const { startRandomCapture, stopCapture, captureScreenshot, captureTestScreenshot, permissionGranted, permissionDenied, exportStoredScreenshots, checkStoredScreenshots, chooseScreenshotDirectory } = useScreenshotCapture();
+  const { startRandomCapture, stopCapture } = useScreenshotCapture();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeEntry, setActiveEntry] = useState<TimeEntry | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -420,47 +420,6 @@ export function TimerStartControl({ compact = false }: TimerStartControlProps) {
             <div>
               <span className="font-mono text-xl text-gray-400">00:00:00</span>
               <div className="text-sm theme-text-secondary">{t('noActiveTimer')}</div>
-            </div>
-          </div>
-          
-          {/* DEBUG: Screenshot status */}
-          <div className="mx-4 text-xs bg-yellow-100 border border-yellow-300 rounded px-2 py-1">
-            <div>Permission: {permissionGranted ? '✅' : permissionDenied ? '❌' : '⏳'}</div>
-            <div>Mode: 💾 Browser storage → Use Export All to download without prompts</div>
-            <div className="flex gap-1 mt-1 flex-wrap">
-              <button 
-                onClick={captureScreenshot}
-                className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
-              >
-                Screen Capture
-              </button>
-              <button 
-                onClick={captureTestScreenshot}
-                className="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600"
-              >
-                Test Image
-              </button>
-              <button 
-                onClick={chooseScreenshotDirectory}
-                className="px-2 py-1 bg-purple-500 text-white rounded text-xs hover:bg-purple-600"
-              >
-                Choose Folder (No Prompts)
-              </button>
-              <button 
-                onClick={() => {
-                  const count = checkStoredScreenshots();
-                  alert(`Found ${count} screenshots in storage. Click Export to download them all at once.`);
-                }}
-                className="px-2 py-1 bg-orange-500 text-white rounded text-xs hover:bg-orange-600"
-              >
-                Check Storage ({checkStoredScreenshots()})
-              </button>
-              <button 
-                onClick={exportStoredScreenshots}
-                className="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600"
-              >
-                Export All Screenshots
-              </button>
             </div>
           </div>
           
