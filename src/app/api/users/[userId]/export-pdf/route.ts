@@ -7,9 +7,10 @@ import autoTable from 'jspdf-autotable';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -26,7 +27,7 @@ export async function GET(
     }
 
     // Check if the user has HR or MANAGER role to export other users' data
-    if (currentUser.role !== 'HR' && currentUser.role !== 'MANAGER' && currentUser.id !== params.userId) {
+    if (currentUser.role !== 'HR' && currentUser.role !== 'MANAGER' && currentUser.id !== userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -42,7 +43,7 @@ export async function GET(
 
     // Find the target user
     const targetUser = await prisma.user.findUnique({
-      where: { id: params.userId },
+      where: { id: userId },
     });
 
     if (!targetUser) {
@@ -57,7 +58,7 @@ export async function GET(
         lte?: Date;
       };
     } = {
-      userId: params.userId,
+      userId: userId,
     };
 
     if (startDate || endDate) {
