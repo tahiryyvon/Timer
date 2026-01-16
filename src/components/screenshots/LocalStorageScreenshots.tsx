@@ -156,7 +156,6 @@ export default function LocalStorageScreenshots() {
                 console.log('Requesting screen capture permission...');
                 const stream = await navigator.mediaDevices.getDisplayMedia({
                   video: {
-                    mediaSource: 'screen',
                     width: { ideal: 1920 },
                     height: { ideal: 1080 },
                     frameRate: { ideal: 10, max: 15 }
@@ -292,7 +291,7 @@ export default function LocalStorageScreenshots() {
                 
               } catch (error) {
                 console.error('Debug: Real capture failed:', error);
-                alert('Debug capture failed: ' + error.message);
+                alert('Debug capture failed: ' + (error as Error).message);
               }
             }}
             className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
@@ -479,7 +478,7 @@ export default function LocalStorageScreenshots() {
               
               const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
               
-              screenshots.forEach((screenshot, index) => {
+              screenshots.forEach((screenshot: Screenshot) => {
                 console.log(`\n--- Analyzing ${screenshot.filename} ---`);
                 addDebugInfo(`🔬 Analyzing: ${screenshot.filename}`);
                 
@@ -500,7 +499,7 @@ export default function LocalStorageScreenshots() {
                     const pixels = imageData.data;
                     
                     // Analyze pixel content
-                    let totalPixels = pixels.length / 4;
+                    const totalPixels = pixels.length / 4;
                     let blackPixels = 0;
                     let transparentPixels = 0;
                     let coloredPixels = 0;
