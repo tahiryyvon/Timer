@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/components/providers/TranslationProvider';
-import { HomeIcon, ClipboardDocumentListIcon, ClockIcon, UsersIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, ClipboardDocumentListIcon, ClockIcon, UsersIcon, ChartBarIcon, CameraIcon } from '@heroicons/react/24/outline';
 
 interface NavigationItem {
   name: string;
@@ -20,6 +20,8 @@ export function useNavigationItems({ userRole }: NavigationItemsProps): Navigati
     { name: t('dashboard'), href: '/dashboard', icon: HomeIcon },
     { name: t('tasks'), href: '/tasks', icon: ClipboardDocumentListIcon },
     { name: t('timeEntries'), href: '/time-entries', icon: ClockIcon },
+    { name: t('reports'), href: '/reports', icon: ChartBarIcon },
+    { name: t('screenshots'), href: '/screenshots', icon: CameraIcon },
   ];
 
   // Add Users management for HR and Manager roles

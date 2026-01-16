@@ -151,7 +151,6 @@ export async function GET(
 
       // Format time entries for Excel
       const timeEntriesForExcel = exportData.timeEntries.map(entry => ({
-        'Entry ID': entry.id,
         'Task Title': entry.taskTitle,
         'Task Description': entry.taskDescription,
         'Start Time': new Date(entry.startTime).toLocaleString(),
@@ -167,9 +166,8 @@ export async function GET(
 
       // Set column widths
       worksheet['!cols'] = [
-        { wch: 20 }, // Field/Entry ID
-        { wch: 30 }, // Value/Task Title
-        { wch: 35 }, // Task Description
+        { wch: 20 }, // Field/Task Title
+        { wch: 35 }, // Value/Task Description
         { wch: 20 }, // Start Time
         { wch: 20 }, // End Time
         { wch: 15 }  // Duration

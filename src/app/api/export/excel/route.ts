@@ -5,10 +5,15 @@ import prisma from '@/lib/prisma';
 import * as XLSX from 'xlsx';
 
 export async function GET(request: NextRequest) {
+  console.log('=== EXPORT API CALLED ===');
   try {
+    console.log('Export excel endpoint called');
     const session = await getServerSession(authOptions);
+    console.log('Session:', session ? 'EXISTS' : 'NULL');
+    console.log('User email:', session?.user?.email || 'NO EMAIL');
 
     if (!session?.user?.email) {
+      console.log('No session or email found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -64,7 +69,77 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Format data for Excel
+    console.log(`Found ${timeEntries.length} time entries for export`);
+
+    // Check if no data found
+    if (timeEntries.length === 0) {
+      console.log('No time entries found for the specified criteria');
+      
+      // Create an empty Excel file with headers and a "No Data" message
+      const emptyData = [{
+        'Task Title': 'No data found',
+        'Task Description': 'No time entries match your filter criteria',
+        'Task Status': '-',
+        'Start Time': '-',
+        'End Time': '-',
+        'Duration': '-',
+        'Duration (Hours)': '-',
+        'Date': '-',
+        'Status': '-',
+      }];
+
+      // Create workbook and worksheet with the "no data" message
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(emptyData);
+
+      // Set column widths
+      const columnWidths = [
+        { wch: 25 }, // Task Title
+        { wch: 40 }, // Task Description
+        { wch: 12 }, // Task Status
+        { wch: 20 }, // Start Time
+        { wch: 20 }, // End Time
+        { wch: 10 }, // Duration
+        { wch: 15 }, // Duration (Hours)
+        { wch: 12 }, // Date
+        { wch: 12 }, // Status
+      ];
+      worksheet['!cols'] = columnWidths;
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Time Entries');
+
+      // Generate filename with date range
+      let filename = `time-entries`;
+      if (startDate && endDate) {
+        filename += `_${startDate}_to_${endDate}`;
+      } else if (startDate) {
+        filename += `_from_${startDate}`;
+      } else if (endDate) {
+        filename += `_until_${endDate}`;
+      } else {
+        filename += `_${new Date().toISOString().split('T')[0]}`;
+      }
+      filename += '_no_data.xlsx';
+
+      // Generate Excel buffer
+      const excelBuffer = XLSX.write(workbook, { 
+        type: 'buffer', 
+        bookType: 'xlsx' 
+      });
+
+      // Return Excel file with no data message
+      return new NextResponse(excelBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': `attachment; filename="${filename}"`,
+          'Cache-Control': 'no-cache',
+        },
+      });
+    }
+
+    // Format data for Excel (only if we have data)
     const excelData = timeEntries.map((entry) => {
       const formatTime = (timeInSeconds: number) => {
         const hours = Math.floor(timeInSeconds / 3600);

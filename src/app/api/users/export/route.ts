@@ -79,6 +79,52 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    console.log(`Found ${users.length} users for export`);
+
+    // Check if no users found
+    if (users.length === 0) {
+      console.log('No users found for export');
+      
+      if (format === 'json') {
+        return NextResponse.json({ 
+          users: [], 
+          exportDate: new Date().toISOString(),
+          message: 'No users found'
+        });
+      }
+
+      // Create empty Excel with message
+      const workbook = XLSX.utils.book_new();
+      const emptyData = [{
+        'Message': 'No users found',
+        'Details': 'No users match your export criteria',
+        'Export Date': new Date().toLocaleString()
+      }];
+
+      const worksheet = XLSX.utils.json_to_sheet(emptyData);
+      worksheet['!cols'] = [
+        { wch: 25 }, // Message
+        { wch: 40 }, // Details  
+        { wch: 20 }  // Export Date
+      ];
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'No Data');
+
+      const excelBuffer = XLSX.write(workbook, { 
+        type: 'buffer', 
+        bookType: 'xlsx' 
+      });
+
+      return new NextResponse(excelBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': 'attachment; filename="users_export_no_data.xlsx"',
+          'Cache-Control': 'no-cache',
+        },
+      });
+    }
+
     if (format === 'json') {
       return NextResponse.json({ users, exportDate: new Date().toISOString() });
     }
@@ -137,14 +183,15 @@ export async function GET(request: NextRequest) {
       XLSX.utils.book_append_sheet(workbook, summaryWorksheet, 'Summary');
 
       // Create a sheet for each user
-      users.forEach(user => {
+      const usedSheetNames = new Set(['Summary']); // Track used names to avoid duplicates
+      
+      users.forEach((user) => {
         const userTimeEntries = user.timeEntries.map(entry => {
           const duration = entry.endTime 
             ? ((new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime()) / (1000 * 60 * 60))
             : 0;
 
           return {
-            'Entry ID': entry.id,
             'Task Title': entry.task?.title || 'No Task',
             'Task Description': entry.task?.description || '',
             'Start Time': new Date(entry.startTime).toLocaleString(),
@@ -164,16 +211,16 @@ export async function GET(request: NextRequest) {
 
         // Create user info header with better structure
         const userInfo = [
-          { 'Entry ID': `${user.name || user.email.split('@')[0]} - TIME ENTRIES`, 'Task Title': '', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': '', 'Task Title': '', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': 'USER INFO:', 'Task Title': '', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': 'Name:', 'Task Title': user.name || 'N/A', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': 'Email:', 'Task Title': user.email, 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': 'Role:', 'Task Title': user.role, 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': 'Total Entries:', 'Task Title': user.timeEntries.length.toString(), 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': 'Total Hours:', 'Task Title': userTotalHours.toFixed(2), 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': '', 'Task Title': '', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
-          { 'Entry ID': '--- TIME ENTRIES ---', 'Task Title': '', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' }
+          { 'Task Title': `${user.name || user.email.split('@')[0]} - TIME ENTRIES`, 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': '', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': 'USER INFO:', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': 'Name: ' + (user.name || 'N/A'), 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': 'Email: ' + user.email, 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': 'Role: ' + user.role, 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': 'Total Entries: ' + user.timeEntries.length.toString(), 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': 'Total Hours: ' + userTotalHours.toFixed(2), 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': '', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' },
+          { 'Task Title': '--- TIME ENTRIES ---', 'Task Description': '', 'Start Time': '', 'End Time': '', 'Duration (Hours)': '' }
         ];
 
         // Combine user info and time entries
@@ -184,16 +231,29 @@ export async function GET(request: NextRequest) {
 
         // Set column widths
         worksheet['!cols'] = [
-          { wch: 15 }, // Entry ID
-          { wch: 25 }, // Task Title
-          { wch: 30 }, // Task Description
+          { wch: 30 }, // Task Title
+          { wch: 35 }, // Task Description
           { wch: 20 }, // Start Time
           { wch: 20 }, // End Time
           { wch: 15 }  // Duration
         ];
 
-        // Add the sheet to workbook with user name as sheet name
-        const sheetName = (user.name || user.email).substring(0, 31).replace(/[\\\/\?\*\[\]:]/g, '_');
+        // Create safe sheet name (Excel limit: 31 chars, no special characters)
+        const baseSheetName = (user.name || user.email.split('@')[0])
+          .replace(/[\\\/\?\*\[\]:]/g, '_') // Remove invalid Excel sheet name characters
+          .substring(0, 28); // Leave room for potential suffix
+
+        // Ensure unique sheet name
+        let sheetName = baseSheetName;
+        let counter = 1;
+        while (usedSheetNames.has(sheetName)) {
+          const suffix = `_${counter}`;
+          sheetName = baseSheetName.substring(0, 31 - suffix.length) + suffix;
+          counter++;
+        }
+        usedSheetNames.add(sheetName);
+
+        // Add the sheet to workbook with safe, unique name
         XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
       });
 
@@ -214,7 +274,6 @@ export async function GET(request: NextRequest) {
         'User Name',
         'User Email',
         'User Role',
-        'Entry ID',
         'Task Title',
         'Task Description',
         'Start Time',
@@ -241,7 +300,6 @@ export async function GET(request: NextRequest) {
             `"${user.name || ''}"`,
             `"${user.email}"`,
             user.role,
-            entry.id,
             `"${entry.task?.title || 'No Task'}"`,
             `"${entry.task?.description || ''}"`,
             new Date(entry.startTime).toLocaleString(),

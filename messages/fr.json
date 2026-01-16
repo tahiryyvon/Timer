@@ -3,6 +3,8 @@
     "dashboard": "Tableau de bord",
     "tasks": "Tâches",
     "timeEntries": "Saisies de temps",
+    "reports": "Rapports",
+    "screenshots": "Captures d'écran",
     "profile": "Profil",
     "users": "Utilisateurs",
     "signOut": "Se déconnecter"
@@ -73,7 +75,44 @@
     "thisMonth": "Ce mois",
     "recentActivity": "Activité récente",
     "noTimeEntries": "Aucune saisie de temps pour le moment. Démarrez votre premier minuteur !",
-    "hours": "h"
+    "hours": "h",
+    "startDate": "Date de début",
+    "endDate": "Date de fin"
+  },
+  "reports": {
+    "title": "Rapports et Analyses",
+    "subtitle": "Consultez les analyses détaillées et exportez les données des utilisateurs",
+    "exportData": "Exporter les Données",
+    "exporting": "Exportation...",
+    "todaysHours": "Heures d'Aujourd'hui",
+    "thisWeek": "Cette Semaine",
+    "thisMonth": "Ce Mois",
+    "recentActivityOverview": "Aperçu de l'Activité Récente",
+    "noTimeEntries": "Aucune saisie de temps trouvée pour cet utilisateur",
+    "analyticsAndInsights": "Analyses et Insights",
+    "noName": "Sans Nom",
+    "showingDataFor": "Affichage des données pour:",
+    "recentActivity": "Activité Récente",
+    "exportUserData": "Exporter les Données Utilisateur"
+  },
+  "screenshots": {
+    "title": "Surveillance par Captures d'Écran",
+    "subtitle": "Visualiser et gérer les captures d'écran des employés prises pendant le temps de travail",
+    "noScreenshots": "Aucune capture d'écran trouvée",
+    "capturedAt": "Capturée le",
+    "user": "Utilisateur",
+    "task": "Tâche",
+    "timeEntry": "Saisie de temps",
+    "deleteScreenshot": "Supprimer la Capture",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette capture d'écran? Cette action supprimera également la saisie de temps associée.",
+    "confirmDeleteTitle": "Supprimer la Capture d'Écran",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "filterByUser": "Filtrer par Utilisateur",
+    "allUsers": "Tous les Utilisateurs",
+    "loadMore": "Charger Plus",
+    "screenshotDeleted": "Capture d'écran et saisie de temps supprimées avec succès",
+    "screenshotDeleteError": "Échec de la suppression de la capture d'écran"
   },
   "timer": {
     "stopTimer": "Arrêter le Chrono",
@@ -116,7 +155,9 @@
     "edit": "Modifier",
     "noTasks": "Aucune tâche disponible",
     "taskManagement": "Gestion des Tâches",
+    "newTask": "Nouvelle Tâche",
     "createNewTask": "Créer une Nouvelle Tâche",
+    "running": "EN COURS",
     "taskTitleRequired": "Titre de la Tâche *",
     "enterTaskTitlePlaceholder": "Entrez le titre de la tâche...",
     "description": "Description",
@@ -210,7 +251,9 @@
     "ongoing": "En cours",
     "hours": "heures",
     "exportExcel": "Exporter Excel",
-    "exportCsv": "Exporter CSV"
+    "exportCsv": "Exporter CSV",
+    "startDate": "Date de début",
+    "endDate": "Date de fin"
   },
   "profile": {
     "title": "Profil",
@@ -254,6 +297,7 @@
     "userManagement": "Gestion des utilisateurs",
     "manageUserAccounts": "Gérer les comptes utilisateur, les rôles et les permissions.",
     "exportAllUsers": "Exporter tout (Excel multi-feuilles)",
+    "exportUserData": "Exporter les données utilisateur",
     "generatingExcel": "Génération Excel...",
     "totalUsers": "utilisateurs au total",
     "searchPlaceholder": "Rechercher des utilisateurs par nom, e-mail ou rôle...",

@@ -23,6 +23,7 @@ model User {
   resetTokenExpiry DateTime?
   tasks            Task[]
   timeEntries      TimeEntry[]
+  screenshots      Screenshot[]
 }
 
 model Task {
@@ -51,6 +52,7 @@ model TimeEntry {
   
   // To handle pauses, we store intervals
   intervals   TimeInterval[]
+  screenshots Screenshot[]
 }
 
 model TimeInterval {
@@ -59,4 +61,16 @@ model TimeInterval {
   endTime     DateTime?
   timeEntryId String
   timeEntry   TimeEntry @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+}
+
+model Screenshot {
+  id          String      @id @default(cuid())
+  filename    String      // Path to screenshot file on server
+  capturedAt  DateTime    @default(now())
+  
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  timeEntryId String
+  timeEntry   TimeEntry   @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
 }

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DocumentArrowDownIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { useTranslations } from '@/components/providers/TranslationProvider';
+import { ExportModal } from '@/components/common/ExportModal';
 
 interface TimeEntry {
   id: string;
@@ -28,9 +29,7 @@ interface TimeEntriesClientProps {
 export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
   const t = useTranslations('timeEntries');
   const [isExporting, setIsExporting] = useState(false);
-  const [showDateFilter, setShowDateFilter] = useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [showExportModal, setShowExportModal] = useState(false);
   const [isDeletingEntry, setIsDeletingEntry] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isClient, setIsClient] = useState(false);
@@ -189,7 +188,7 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
     return groups;
   };
 
-  const handleExportToExcel = async () => {
+  const handleExportToExcel = async (startDate?: string, endDate?: string, format: 'xlsx' | 'pdf' = 'xlsx') => {
     if (isExporting) return;
     
     setIsExporting(true);
@@ -200,21 +199,53 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
       if (endDate) params.append('endDate', endDate);
       
       const queryString = params.toString();
-      const url = `/api/export/excel${queryString ? '?' + queryString : ''}`;
+      const endpoint = format === 'pdf' ? 'pdf' : 'excel';
+      const url = `/api/export/${endpoint}${queryString ? '?' + queryString : ''}`;
       
-      // Create a temporary link to download the file
+      // Fetch the file with proper authentication
+      const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'include', // Include cookies for authentication
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get the blob from response
+      const blob = await response.blob();
+      
+      // Get filename from response headers or use default
+      const contentDisposition = response.headers.get('content-disposition');
+      let filename = format === 'pdf' ? 'time-entries.pdf' : 'time-entries.xlsx';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+
+      // Create download link
+      const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
-      link.download = ''; // Filename will be set by the server
+      link.href = downloadUrl;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
-      // Close date filter after export
-      setShowDateFilter(false);
+      // Clean up the URL object
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      // Check if filename indicates no data and show appropriate message
+      if (filename.includes('_no_data')) {
+        throw new Error('No data found for the selected date range. The exported file contains a "No Data" message.');
+      }
+      
     } catch (error) {
       console.error('Export failed:', error);
-      alert(t('failedToExport'));
+      // Re-throw the error so the modal can handle it appropriately  
+      throw error;
     } finally {
       setIsExporting(false);
     }
@@ -285,86 +316,25 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
               )}
             </div>
             
-            {/* Export Button with Dropdown */}
+            {/* Export Button */}
             <div className="relative">
               <button 
-                onClick={() => setShowDateFilter(!showDateFilter)}
-                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                onClick={() => setShowExportModal(true)}
+                disabled={isExporting}
+                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:transform-none"
               >
-                <DocumentArrowDownIcon className="h-4 w-4" />
-                <span>{t('exportToExcel')}</span>
+                {isExporting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    <span>{t('exporting')}</span>
+                  </>
+                ) : (
+                  <>
+                    <DocumentArrowDownIcon className="h-4 w-4" />
+                    <span>{t('exportToExcel')}</span>
+                  </>
+                )}
               </button>
-
-              {/* Date Filter Dropdown */}
-              {showDateFilter && (
-                <>
-                  <div 
-                    className="fixed inset-0 z-10" 
-                    onClick={() => setShowDateFilter(false)}
-                  ></div>
-                  <div className="absolute right-0 top-full mt-2 w-80 theme-modal rounded-xl shadow-2xl z-20 p-4" style={{ border: '1px solid var(--card-border)' }}>
-                    <h3 className="text-lg font-semibold theme-text-primary mb-4">{t('exportOptions')}</h3>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium theme-text-secondary mb-2">
-                          <CalendarIcon className="h-4 w-4 inline mr-2" />
-                          {t('dateRange')}
-                        </label>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <input
-                              type="date"
-                              value={startDate}
-                              onChange={(e) => setStartDate(e.target.value)}
-                              className="w-full px-3 py-2 theme-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 theme-text-primary"
-                              placeholder={t('startTime')}
-                            />
-                          </div>
-                          <div>
-                            <input
-                              type="date"
-                              value={endDate}
-                              onChange={(e) => setEndDate(e.target.value)}
-                              className="w-full px-3 py-2 theme-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 theme-text-primary"
-                              placeholder={t('endTime')}
-                            />
-                          </div>
-                        </div>
-                        <p className="text-xs theme-text-secondary mt-1">
-                          {t('leaveEmptyExport')}
-                        </p>
-                      </div>
-                      
-                      <div className="flex space-x-3 pt-2">
-                        <button
-                          onClick={handleExportToExcel}
-                          disabled={isExporting}
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                        >
-                          {isExporting ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                              <span>{t('exporting')}</span>
-                            </>
-                          ) : (
-                            <>
-                              <DocumentArrowDownIcon className="h-4 w-4" />
-                              <span>{t('downloadExcel')}</span>
-                            </>
-                          )}
-                        </button>
-                        <button
-                          onClick={() => setShowDateFilter(false)}
-                          className="px-4 py-2 theme-input theme-text-primary rounded-lg font-medium theme-hover transition-colors"
-                        >
-                          {t('cancel')}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -556,6 +526,14 @@ export default function TimeEntriesClient({ user }: TimeEntriesClientProps) {
           </div>
         ) : null}
       </div>
+
+      {/* Export Modal */}
+      <ExportModal
+        isVisible={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onExport={handleExportToExcel}
+        title={t('exportToExcel')}
+      />
     </div>
   );
 }

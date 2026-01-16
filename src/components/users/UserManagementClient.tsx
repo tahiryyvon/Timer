@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from '@/components/providers/TranslationProvider';
+import { ExportModal } from '@/components/common/ExportModal';
 
 interface User {
   id: string;
@@ -39,6 +40,10 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
   const [exportingUserId, setExportingUserId] = useState<string | null>(null);
   const [exportingAll, setExportingAll] = useState(false);
   const [resetPasswordLoading, setResetPasswordLoading] = useState<string | null>(null);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [currentExportType, setCurrentExportType] = useState<'user' | 'all' | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
   const canManageUsers = () => {
     return currentUser.role === 'HR' || currentUser.role === 'MANAGER';
@@ -122,29 +127,60 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
     }
   };
 
-  const handleExportTimeEntries = async (userId: string, userName: string | null, format: 'xlsx' | 'csv' | 'json' = 'xlsx') => {
+  const handleExportTimeEntries = async (userId: string, userName: string | null, format: 'xlsx' | 'csv' | 'json' | 'pdf' = 'xlsx', dateParams = { startDate: '', endDate: '' }) => {
     setExportingUserId(userId);
     
     try {
-      const response = await fetch(`/api/users/${userId}/export?format=${format}`);
+      // Build query parameters
+      const params = new URLSearchParams();
+      params.append('format', format);
+      if (dateParams.startDate) params.append('startDate', dateParams.startDate);
+      if (dateParams.endDate) params.append('endDate', dateParams.endDate);
+      
+      // Use different endpoint for PDF
+      const endpoint = format === 'pdf' 
+        ? `/api/users/${userId}/export-pdf?${params.toString()}`
+        : `/api/users/${userId}/export?${params.toString()}`;
+      
+      const response = await fetch(endpoint, {
+        credentials: 'include', // Include cookies for authentication
+      });
       
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Failed to export time entries');
       }
 
-      if (format === 'xlsx') {
-        // Handle Excel download
+      if (format === 'xlsx' || format === 'pdf') {
+        // Handle Excel/PDF download
         const blob = await response.blob();
+        
+        // Get filename from response headers
+        const contentDisposition = response.headers.get('content-disposition');
+        const fileExtension = format === 'pdf' ? 'pdf' : 'xlsx';
+        let filename = `time-entries-${userName?.replace(/[^a-zA-Z0-9]/g, '-') || 'user'}-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+          if (filenameMatch) {
+            filename = filenameMatch[1];
+          }
+        }
+        
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = `time-entries-${userName?.replace(/[^a-zA-Z0-9]/g, '-') || 'user'}-${new Date().toISOString().split('T')[0]}.xlsx`;
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
+        
+        // Check if filename indicates no data
+        if (filename.includes('_no_data')) {
+          throw new Error('No data found for the selected user and date range. The exported file contains a "No Data" message.');
+        }
+        
       } else if (format === 'csv') {
         // Handle CSV download
         const blob = await response.blob();
@@ -171,29 +207,60 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
     }
   };
 
-  const handleExportAllUsers = async (format: 'xlsx' | 'csv' | 'json' = 'xlsx') => {
+  const handleExportAllUsers = async (format: 'xlsx' | 'csv' | 'json' | 'pdf' = 'xlsx', dateParams = { startDate: '', endDate: '' }) => {
     setExportingAll(true);
     
     try {
-      const response = await fetch(`/api/users/export?format=${format}`);
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (format !== 'pdf') params.append('format', format); // PDF endpoint doesn't need format param
+      if (dateParams.startDate) params.append('startDate', dateParams.startDate);
+      if (dateParams.endDate) params.append('endDate', dateParams.endDate);
+      
+      // Use different endpoint for PDF
+      const endpoint = format === 'pdf' 
+        ? `/api/users/export-pdf?${params.toString()}`
+        : `/api/users/export?${params.toString()}`;
+      
+      const response = await fetch(endpoint, {
+        credentials: 'include', // Include cookies for authentication
+      });
       
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Failed to export all users time entries');
       }
 
-      if (format === 'xlsx') {
-        // Handle Excel download
+      if (format === 'xlsx' || format === 'pdf') {
+        // Handle Excel/PDF download
         const blob = await response.blob();
+        
+        // Get filename from response headers
+        const contentDisposition = response.headers.get('content-disposition');
+        const fileExtension = format === 'pdf' ? 'pdf' : 'xlsx';
+        let filename = `all-users-time-entries-${new Date().toISOString().split('T')[0]}.${fileExtension}`;
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+          if (filenameMatch) {
+            filename = filenameMatch[1];
+          }
+        }
+        
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = `all-users-time-entries-${new Date().toISOString().split('T')[0]}.xlsx`;
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
+        
+        // Check if filename indicates no data
+        if (filename.includes('_no_data')) {
+          throw new Error('No data found for the selected criteria. The exported file contains a "No Data" message.');
+        }
+        
       } else if (format === 'csv') {
         // Handle CSV download
         const blob = await response.blob();
@@ -216,6 +283,39 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
       alert(t('failedToExportAllUsers'));
     } finally {
       setExportingAll(false);
+    }
+  };
+
+  // Export handlers
+  const handleUserExportClick = (userId: string, userName: string | null) => {
+    setCurrentUserId(userId);
+    setCurrentUserName(userName);
+    setCurrentExportType('user');
+    setShowExportModal(true);
+  };
+
+  const handleAllUsersExportClick = () => {
+    setCurrentExportType('all');
+    setShowExportModal(true);
+  };
+
+  const handleModalExport = async (startDate?: string, endDate?: string, format: 'xlsx' | 'pdf' = 'xlsx') => {
+    const dateParams = { startDate: startDate || '', endDate: endDate || '' };
+    
+    try {
+      if (currentExportType === 'user' && currentUserId) {
+        await handleExportTimeEntries(currentUserId, currentUserName, format, dateParams);
+      } else if (currentExportType === 'all') {
+        await handleExportAllUsers(format, dateParams);
+      }
+    } catch (error) {
+      // Re-throw the error so the modal can handle it
+      throw error;
+    } finally {
+      // Reset state
+      setCurrentExportType(null);
+      setCurrentUserId(null);
+      setCurrentUserName(null);
     }
   };
 
@@ -282,7 +382,7 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
           </div>
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => handleExportAllUsers('xlsx')}
+              onClick={() => handleAllUsersExportClick()}
               disabled={exportingAll}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 border border-transparent rounded-lg shadow-sm hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-purple-600 disabled:hover:to-pink-600 transition-all duration-200 transform hover:scale-105 disabled:transform-none"
             >
@@ -406,7 +506,7 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
                         {t('edit')}
                       </button>
                       <button
-                        onClick={() => handleExportTimeEntries(user.id, user.name)}
+                        onClick={() => handleUserExportClick(user.id, user.name)}
                         disabled={exportingUserId === user.id}
                         className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 border border-transparent rounded-lg shadow-sm hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-green-600 disabled:hover:to-emerald-600 transition-all duration-200 transform hover:scale-105 disabled:transform-none"
                       >
@@ -551,6 +651,19 @@ export default function UserManagementClient({ currentUser, users }: UserManagem
           </div>
         </div>
       )}
+
+      {/* Export Modal */}
+      <ExportModal
+        isVisible={showExportModal}
+        onClose={() => {
+          setShowExportModal(false);
+          setCurrentExportType(null);
+          setCurrentUserId(null);
+          setCurrentUserName(null);
+        }}
+        onExport={handleModalExport}
+        title={currentExportType === 'all' ? t('exportAllUsers') : t('exportUserData')}
+      />
     </div>
   );
 }
