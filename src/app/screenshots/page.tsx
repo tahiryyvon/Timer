@@ -4,12 +4,23 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import AppLayout from '@/components/layout/AppLayout';
 import { ClientProviders } from '@/components/providers/ClientProviders';
 import LocalStorageScreenshots from '@/components/screenshots/LocalStorageScreenshots';
+import prisma from '@/lib/prisma';
 
 export default async function ScreenshotsPage() {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session?.user?.email) {
     redirect('/auth/signin');
+  }
+
+  // Get current user from database to check role
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  // Restrict access to HR and MANAGER roles only
+  if (!currentUser || (currentUser.role !== 'HR' && currentUser.role !== 'MANAGER')) {
+    redirect('/dashboard');
   }
 
   return (

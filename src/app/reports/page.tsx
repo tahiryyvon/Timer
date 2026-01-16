@@ -97,6 +97,11 @@ export default async function ReportsPage() {
     redirect('/auth/signin');
   }
 
+  // Restrict access to HR and MANAGER roles only
+  if (currentUser.role !== 'HR' && currentUser.role !== 'MANAGER') {
+    redirect('/dashboard');
+  }
+
   // Get all users for the dropdown
   const allUsers = await prisma.user.findMany({
     select: {

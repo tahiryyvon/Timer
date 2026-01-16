@@ -20,9 +20,15 @@ export function useNavigationItems({ userRole }: NavigationItemsProps): Navigati
     { name: t('dashboard'), href: '/dashboard', icon: HomeIcon },
     { name: t('tasks'), href: '/tasks', icon: ClipboardDocumentListIcon },
     { name: t('timeEntries'), href: '/time-entries', icon: ClockIcon },
-    { name: t('reports'), href: '/reports', icon: ChartBarIcon },
-    { name: t('screenshots'), href: '/screenshots', icon: CameraIcon },
   ];
+
+  // Add Reports and Screenshots for HR and Manager roles only
+  if (userRole === 'HR' || userRole === 'MANAGER') {
+    navigation.push(
+      { name: t('reports'), href: '/reports', icon: ChartBarIcon },
+      { name: t('screenshots'), href: '/screenshots', icon: CameraIcon }
+    );
+  }
 
   // Add Users management for HR and Manager roles
   if (userRole === 'HR' || userRole === 'MANAGER') {
